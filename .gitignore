@@ -1,0 +1,12 @@
+# Ignore datasets
+*.csv
+*.xlsx
+*.pkl
+*.h5
+*.model
+
+# Ignore Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual env
+venv/

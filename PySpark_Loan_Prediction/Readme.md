@@ -23,8 +23,7 @@ The dataset contains applicant income, credit history, dependents, property type
 
 ## Files
 - `Loan_Prediction.ipynb` – full code in PySpark
-- `screenshots/` – output and charts
-- `report.pdf` or `report.docx` – final report
+- `Loan_Prediction_Report.pdf` ` – final report
 
 ## How to Run
 Requires PySpark, Pandas, Matplotlib, Seaborn, scikit-learn.

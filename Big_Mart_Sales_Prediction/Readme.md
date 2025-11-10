@@ -5,7 +5,7 @@ The goal is to help retail planning, optimize inventory, and understand sales pa
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 The notebook performs end-to-end regression modeling on historical sales data from Big Mart.  
 It includes data cleaning, exploratory analysis, feature encoding, model training, and performance evaluation.

@@ -1,125 +1,139 @@
-# Big Mart Sales Prediction using Machine Learning
+# BigMart Sales Prediction Using Machine Learning
 
-This project predicts product sales across Big Mart outlets using machine learning.  
-The goal is to help retail planning, optimize inventory, and understand sales patterns through data-driven modeling.
+## Overview
 
----
+This project aims to predict **item outlet sales** for a retail chain using machine learning regression models.
+Accurate sales prediction helps businesses improve inventory planning, pricing strategies, and outlet performance analysis.
 
-## Project Overview
-
-The notebook performs end-to-end regression modeling on historical sales data from Big Mart.  
-It includes data cleaning, exploratory analysis, feature encoding, model training, and performance evaluation.
+The workflow includes data cleaning, handling missing values, feature encoding, model training, and performance comparison using multiple regression algorithms.
 
 ---
 
-## Dataset
+## Dataset Description
 
-The dataset contains product and outlet features that influence sales.  
-Key columns include:
+* **Dataset file:** `train.csv`
+* **Total records:** 8,523
+* **Target variable:** `Item_Outlet_Sales`
 
-| Feature | Description |
-|---------|-------------|
-| `Item_Identifier` | Unique product ID |
-| `Item_Weight` | Weight of the product |
-| `Item_Fat_Content` | Type of fat content (Low Fat / Regular) |
-| `Item_Visibility` | Display visibility in store |
-| `Item_Type` | Category of product |
-| `Item_MRP` | Maximum retail price |
-| `Outlet_Identifier` | Unique store ID |
-| `Outlet_Size` | Size of the outlet |
-| `Outlet_Location_Type` | Tier 1/2/3 |
-| `Outlet_Type` | Grocery or Supermarket category |
-| `Item_Outlet_Sales` | **Target Variable** – product sales figure |
+### Key Features
 
----
+* `Item_Weight`
+* `Item_Fat_Content`
+* `Item_Visibility`
+* `Item_Type`
+* `Item_MRP`
+* `Outlet_Identifier`
+* `Outlet_Establishment_Year`
+* `Outlet_Size`
+* `Outlet_Location_Type`
+* `Outlet_Type`
 
-##  Approach
+### Data Quality Notes
 
-### 1. Data Cleaning
-- Checked for null values
-- Imputed missing `Item_Weight` using mean
-- Filled missing `Outlet_Size` using mode by `Outlet_Type`
-- Corrected inconsistent entries in `Item_Fat_Content`
+* Missing values present in:
 
-### 2. Exploratory Data Analysis
-- Distribution plots for numeric variables  
-- Count plots for categorical variables  
-- Identified skew, sales variation, and category frequency
-
-### 3. Feature Engineering
-- Label Encoding applied to categorical columns:
-  - `Item_Fat_Content`
-  - `Item_Type`
-  - `Outlet_Identifier`
-  - `Outlet_Size`
-  - `Outlet_Location_Type`
-  - `Outlet_Type`
-
-### 4. Model Training
-Algorithms used:
-- **XGBRegressor**
-- **RandomForestRegressor**
-- **DecisionTreeRegressor**
-
-Data split:
-```python
-train_test_split(X, y, test_size=0.2, random_state=2)
-````
+  * `Item_Weight`
+  * `Outlet_Size`
+* No duplicate records
+* Mix of numerical and categorical variables
 
 ---
 
-## Model Performance
+## Data Preprocessing
 
-| Model                       | MAE      | MSE        | R² Score |
-| --------------------------- | -------- | ---------- | -------- |
-| **XGBoost Regressor**       | ~858.95  | ~1,495,063 | ~0.516   |
-| **Random Forest Regressor** | ~827.19  | ~1,397,686 | ~0.547   |
-| **Decision Tree Regressor** | ~1078.39 | ~2,303,799 | ~0.254   |
+### Handling Missing Values
 
-**Best Model:** Random Forest (highest R²)
+* `Item_Weight` filled using **mean imputation**
+* `Outlet_Size` filled using **mode based on Outlet_Type**
 
----
+### Feature Cleaning
 
-## 🛠 Dependencies
+* Standardized inconsistent values in `Item_Fat_Content`
 
-```python
-numpy
-pandas
-matplotlib
-seaborn
-sklearn
-xgboost
-```
+  * `LF`, `low fat` → `Low Fat`
+  * `reg` → `Regular`
+
+### Encoding
+
+* Label Encoding applied to all categorical features
+* `Item_Identifier` removed from modeling due to low predictive value
 
 ---
 
-## How to Run
+## Train–Test Split
 
-1. Clone repository
-2. Place `train.csv` in working directory
-3. Install dependencies:
+* Training set: 80%
+* Test set: 20%
+* Random state fixed for reproducibility
+
+---
+
+## Models Trained
+
+The following regression models were trained and evaluated:
+
+* XGBoost Regressor
+* Random Forest Regressor
+* Decision Tree Regressor
+
+---
+
+## Model Performance Comparison
+
+| Model                   |  MAE (↓) |      MSE (↓) | R² Score (↑) |
+| ----------------------- | -------: | -----------: | -----------: |
+| XGBoost Regressor       |   858.95 | 1,495,063.46 |       0.5157 |
+| Random Forest Regressor |   827.20 | 1,397,686.45 |       0.5472 |
+| Decision Tree Regressor | 1,078.39 | 2,303,799.63 |       0.2537 |
+
+### What These Numbers Mean
+
+* **MAE:** Average absolute error in predicted sales
+* **MSE:** Penalizes larger prediction errors more heavily
+* **R² Score:** Proportion of variance in sales explained by the model
+
+Higher R² and lower MAE/MSE indicate better performance.
+
+---
+
+## Key Insights
+
+* **Random Forest performs best overall**, achieving the lowest MAE and highest R² score
+* **XGBoost provides competitive performance** with slightly higher error
+* **Decision Tree significantly overfits**, resulting in poor generalization
+* Ensemble models capture nonlinear relationships better than a single tree
+
+---
+
+## Requirements
+
+Install required dependencies:
 
 ```bash
-pip install -r requirements.txt
+pip install numpy pandas matplotlib seaborn scikit-learn xgboost
 ```
-
-4. Run the notebook or script
 
 ---
 
-## Outcome
+## How to Run the Project
 
-* A trained machine learning model that predicts outlet sales
-* Insights into key factors affecting retail performance
-* Useful for inventory forecasting and business decision support
+1. Clone the repository
+2. Place `train.csv` in the project directory
+3. Run the Python script or notebook
+4. Review evaluation metrics and compare model performance
 
 ---
 
 ## Future Improvements
 
-* Hyperparameter tuning (GridSearch / RandomizedSearch)
-* Feature scaling and one-hot encoding for higher accuracy
-* Try Gradient Boosting, LightGBM, or Neural Networks
-* Deploy model using Flask / FastAPI
+* Feature scaling and normalization
+* Hyperparameter tuning for ensemble models
+* Cross-validation for robustness
+* Try LightGBM or CatBoost
+* Deploy as a sales forecasting API or dashboard
 
 ---
+
+## Conclusion
+
+This project demonstrates how machine learning models can predict retail sales using historical product and outlet data. Among the tested models, **Random Forest Regressor** delivers the best balance of accuracy and generalization, making it suitable for real-world sales forecasting tasks.

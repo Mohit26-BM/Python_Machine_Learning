@@ -1,4 +1,4 @@
-# Rainfall Prediction System 🌧️
+# Rainfall Prediction System 
 
 This project predicts the likelihood of rainfall based on weather data using machine learning models. The system includes **Decision Tree, Random Forest, and XGBoost** models, with hyperparameter tuning and a predictive system for new inputs.
 
@@ -90,3 +90,4 @@ print("Probability of Rainfall:", round(probability[0][1]*100,2), "%")
 - Random Forest is a close second and slightly more stable across folds.
 
 - Decision Tree is simple but less accurate compared to ensemble methods.
+

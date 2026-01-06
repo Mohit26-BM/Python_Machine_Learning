@@ -19,6 +19,7 @@ Each project is self-contained and demonstrates a complete ML workflow from data
 | Classification | Autism Prediction                           |
 | Classification | Rainfall Prediction                         |
 | Classification | Loan Approval Prediction                    |
+| Classification | Loan Approval Prediction with PySpark       |
 | Regression     | Medical Insurance Cost Prediction           |
 | Regression     | House Price Prediction                      |
 | Regression     | BigMart Sales Prediction                    |

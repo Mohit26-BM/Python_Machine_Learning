@@ -108,6 +108,30 @@ This highlights the **robustness of Random Forest** for real-world predictions.
 
 ---
 
+## Model Performance Comparison
+
+* **RMSE (USD)**
+  Average size of prediction error, with larger mistakes penalized more.
+  Example: Random Forest RMSE of **4,947.95** means predictions are typically off by about **$5,000**.
+
+* **MAE (USD)**
+  Average absolute difference between predicted and actual charges.
+  Example: Random Forest MAE of **2,795.39** means predictions are usually within **$2,800** of the true value.
+
+* **R² Score**
+  Proportion of variance in insurance charges explained by the model.
+  Example: R² of **0.8370** means the model explains **83.7%** of the cost variation.
+
+---
+
+### Prediction Accuracy Within Error Thresholds
+
+* Each number shows **how many test cases** were predicted within the given dollar error.
+* Example: Random Forest **≤ $1,000 = 125** means 125 predictions were within **$1,000** of the actual charge.
+* Higher numbers indicate **more reliable and accurate predictions**.
+
+---
+
 ## Example Prediction
 
 **Input:**

@@ -1,1 +1,84 @@
-
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Churn Dashboard</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/summary.css') }}">
+   </head>
+   <body>
+      <div class="container">
+         <h1>Today's Churn Summary</h1>
+         <h2 class="section-title">Overview</h2>
+         <div class="summary-cards">
+            <div class="card">
+               <h3>{{ total }}</h3>
+               <p>Predictions Today</p>
+            </div>
+            <div class="card">
+               <h3>{{ high_risk }}</h3>
+               <p>High Risk Customers</p>
+            </div>
+            <div class="card">
+               <h3>{{ avg_prob }}%</h3>
+               <p>Average Churn Risk</p>
+            </div>
+         </div>
+         <h2 class="section-title">Risk Distribution</h2>
+         <div class="chart-card">
+            <canvas id="riskChart"></canvas>
+         </div>
+         
+         <div class="footer-actions">
+            <a href="/" class="btn-back">← Back to Home</a>
+         </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+         const riskData = JSON.parse('{{ distribution | tojson | safe }}');
+         
+         const ctx = document.getElementById('riskChart').getContext('2d');
+         
+         new Chart(ctx, {
+           type: 'doughnut',
+           data: {
+             labels: ['Low', 'Medium', 'High', 'Critical'],
+             datasets: [{
+               data: [
+                 riskData.Low || 0,
+                 riskData.Medium || 0,
+                 riskData.High || 0,
+                 riskData.Critical || 0
+               ],
+               backgroundColor: [
+                 '#4caf50',
+                 '#ff9800',
+                 '#f44336',
+                 '#9c27b0'
+               ],
+               borderWidth: 2,
+               borderColor: '#fff'
+             }]
+           },
+           options: {
+             responsive: true,
+             maintainAspectRatio: false,
+             plugins: {
+               legend: { 
+                 position: 'bottom',
+                 labels: {
+                   padding: 15,
+                   font: {
+                     size: 13
+                   }
+                 }
+               },
+               title: {
+                 display: false
+               }
+             }
+           }
+         });
+      </script>
+   </body>
+</html>

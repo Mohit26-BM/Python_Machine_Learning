@@ -5,9 +5,16 @@ import sqlite3
 
 app = Flask(__name__)
 
-model_data = pickle.load(open("customer_churn_model.pkl", "rb"))
+'''model_data = pickle.load(open("customer_churn_model.pkl", "rb"))
 model = model_data["model"]
+feature_names = model_data["feature_names"]''' # Incase to load random forest
+
+model = pickle.load(open("xgb_churn.pkl", "rb")) 
+model_data = pickle.load(
+    open("customer_churn_model.pkl", "rb")
+) 
 feature_names = model_data["feature_names"]
+
 encoders = pickle.load(open("encoders.pkl", "rb"))
 
 @app.route("/")

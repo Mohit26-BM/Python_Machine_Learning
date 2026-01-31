@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction History</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Prediction History</h1>
+    
+    <div class="table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Probability</th>
+            <th>Risk Level</th>
+            <th>Prediction</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td>
+              <span class="probability">{{ row[0] }}%</span>
+            </td>
+            <td>
+              <span class="badge badge-{{ row[2].lower() }}">{{ row[2] }}</span>
+            </td>
+            <td>
+              <span class="prediction {% if row[1] == 'Churn' %}prediction-churn{% else %}prediction-stay{% endif %}">
+                {{ row[1] }}
+              </span>
+            </td>
+            <td class="timestamp">{{ row[3] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+      {% if not rows %}
+      <div class="empty-state">
+        <p>No prediction history available yet.</p>
+      </div>
+      {% endif %}
+    </div>
+    
+    <div class="footer-actions">
+      <a href="/" class="btn-back">← Back to Home</a>
+    </div>
+  </div>
+</body>
+</html>

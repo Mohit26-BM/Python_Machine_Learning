@@ -22,13 +22,15 @@ encoders = pickle.load(open(os.path.join(BASE_DIR, "encoders.pkl"), "rb"))
 # Database Functions
 # -------------------------------
 
+
 def get_db():
     return sqlite3.connect(os.path.join(BASE_DIR, "predictions.db"))
 
 
 def init_db():
     with get_db() as conn:
-        conn.execute("""
+        conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS predictions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 churn_probability REAL,
@@ -36,13 +38,15 @@ def init_db():
                 risk_level TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        """)
+        """
+        )
         conn.commit()
 
 
 # -------------------------------
 # Routes
 # -------------------------------
+
 
 @app.route("/")
 def home():
@@ -83,15 +87,13 @@ def predict():
         with get_db() as conn:
             conn.execute(
                 "INSERT INTO predictions (churn_probability, prediction, risk_level) VALUES (?, ?, ?)",
-                (prob_percent, label, risk)
+                (prob_percent, label, risk),
             )
             conn.commit()
 
-        return jsonify({
-            "prediction": label,
-            "churn_probability": prob_percent,
-            "risk_level": risk
-        })
+        return jsonify(
+            {"prediction": label, "churn_probability": prob_percent, "risk_level": risk}
+        )
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -100,12 +102,14 @@ def predict():
 @app.route("/history")
 def history():
     with get_db() as conn:
-        rows = conn.execute("""
+        rows = conn.execute(
+            """
             SELECT churn_probability, prediction, risk_level, created_at
             FROM predictions
             ORDER BY created_at DESC
             LIMIT 20
-        """).fetchall()
+        """
+        ).fetchall()
 
     return render_template("history.html", rows=rows)
 
@@ -113,20 +117,24 @@ def history():
 @app.route("/dashboard")
 def dashboard():
     with get_db() as conn:
-        today = conn.execute("""
+        today = conn.execute(
+            """
             SELECT
                 COUNT(*) AS total,
                 AVG(churn_probability) AS avg_prob,
                 SUM(CASE WHEN churn_probability >= 60 THEN 1 ELSE 0 END) AS high_risk
             FROM predictions
             WHERE DATE(created_at) = DATE('now')
-        """).fetchone()
+        """
+        ).fetchone()
 
-        distribution_raw = conn.execute("""
+        distribution_raw = conn.execute(
+            """
             SELECT risk_level, COUNT(*)
             FROM predictions
             GROUP BY risk_level
-        """).fetchall()
+        """
+        ).fetchall()
 
     distribution = {"Low": 0, "Medium": 0, "High": 0, "Critical": 0}
 

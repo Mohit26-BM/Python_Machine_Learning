@@ -3,7 +3,7 @@
 This project predicts telecom customer churn using a full machine learning pipeline with preprocessing, SMOTE, cross-validation, model tuning, and real-world evaluation.
 
 ## Live Demo:  
-[Customer Churn Prediction] (https://customer-churn-prediction-x9i2.onrender.com/)
+Customer Churn Prediction (https://customer-churn-prediction-x9i2.onrender.com/)
 
 ---
 

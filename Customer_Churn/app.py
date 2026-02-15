@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-model = pickle.load(open(os.path.join(BASE_DIR, "xgb_churn.pkl"), "rb"))
+model = pickle.load(open(os.path.join(BASE_DIR, "customer_churn_model.pkl"), "rb"))
 #model_data = pickle.load(open(os.path.join(BASE_DIR, "customer_churn_model.pkl"), "rb"))
 #feature_names = model_data["feature_names"]
 feature_names = [
@@ -178,3 +178,4 @@ def dashboard():
 init_db()
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+

@@ -16,6 +16,7 @@ Each project is self-contained and demonstrates a complete ML workflow from data
 | Classification | Spam Mail Detection                         |
 | Classification | Fake News Detection                         |
 | Classification | Credit Card Fraud Detection                 |
+| Classification | [Customer Churn Prediction](https://customer-churn-prediction-x9i2.onrender.com/)|
 | Classification | Autism Prediction                           |
 | Classification | Rainfall Prediction                         |
 | Classification | Loan Approval Prediction                    |

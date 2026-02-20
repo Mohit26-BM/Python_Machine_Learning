@@ -4,5 +4,4 @@ numpy==1.24.0
 scikit-learn==1.6.1
 imbalanced-learn==0.11.0
 gunicorn==21.2.0
-
-
+supabase

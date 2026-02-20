@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import joblib
 from supabase import create_client
+import os
 
 # ── Page Config ────────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -202,8 +203,9 @@ hr { border-color: rgba(255,255,255,0.05) !important; margin: 28px 0 !important;
 # ── Load Model ─────────────────────────────────────────────────────────────────
 @st.cache_resource
 def load_model():
-    model = joblib.load("best_model.pkl")
-    columns = joblib.load("model_columns.pkl")
+    base_dir = os.path.dirname(__file__)
+    model = joblib.load(os.path.join(base_dir, "best_model.pkl"))
+    columns = joblib.load(os.path.join(base_dir, "model_columns.pkl"))
     return model, columns
 
 

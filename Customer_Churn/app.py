@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify, render_template
 import pickle
 import pandas as pd
-import sqlite3
+from supabase import create_client
 import os
+from datetime import datetime, timezone
 
 app = Flask(__name__)
 
@@ -34,34 +35,18 @@ feature_names = [
     "PaperlessBilling",
     "PaymentMethod",
     "MonthlyCharges",
-    "TotalCharges"
+    "TotalCharges",
 ]
 encoders = pickle.load(open(os.path.join(BASE_DIR, "encoders.pkl"), "rb"))
 
 # -------------------------------
-# Database Functions
+# Supabase Client
 # -------------------------------
 
-
-def get_db():
-    return sqlite3.connect(os.path.join(BASE_DIR, "predictions.db"))
-
-
-def init_db():
-    with get_db() as conn:
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS predictions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                churn_probability REAL,
-                prediction TEXT,
-                risk_level TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """
-        )
-        conn.commit()
-
+supabase = create_client(
+    os.environ.get("SUPABASE_URL"),
+    os.environ.get("SUPABASE_KEY"),
+)
 
 # -------------------------------
 # Routes
@@ -103,13 +88,34 @@ def predict():
         else:
             risk = "Low"
 
-        # Save to DB
-        with get_db() as conn:
-            conn.execute(
-                "INSERT INTO predictions (churn_probability, prediction, risk_level) VALUES (?, ?, ?)",
-                (prob_percent, label, risk),
-            )
-            conn.commit()
+        # Save to Supabase
+        try:
+            supabase.table("churn_predictions").insert({
+                "gender":             data.get("gender"),
+                "senior_citizen":     data.get("SeniorCitizen"),
+                "partner":            data.get("Partner"),
+                "dependents":         data.get("Dependents"),
+                "tenure":             data.get("tenure"),
+                "phone_service":      data.get("PhoneService"),
+                "multiple_lines":     data.get("MultipleLines"),
+                "internet_service":   data.get("InternetService"),
+                "online_security":    data.get("OnlineSecurity"),
+                "online_backup":      data.get("OnlineBackup"),
+                "device_protection":  data.get("DeviceProtection"),
+                "tech_support":       data.get("TechSupport"),
+                "streaming_tv":       data.get("StreamingTV"),
+                "streaming_movies":   data.get("StreamingMovies"),
+                "contract":           data.get("Contract"),
+                "paperless_billing":  data.get("PaperlessBilling"),
+                "payment_method":     data.get("PaymentMethod"),
+                "monthly_charges":    data.get("MonthlyCharges"),
+                "total_charges":      data.get("TotalCharges"),
+                "churn_probability":  prob_percent,
+                "prediction":         label,
+                "risk_level":         risk,
+            }).execute()
+        except Exception as db_error:
+            print(f"Database save error: {db_error}")
 
         return jsonify(
             {"prediction": label, "churn_probability": prob_percent, "risk_level": risk}
@@ -121,52 +127,65 @@ def predict():
 
 @app.route("/history")
 def history():
-    with get_db() as conn:
-        rows = conn.execute(
-            """
-            SELECT churn_probability, prediction, risk_level, created_at
-            FROM predictions
-            ORDER BY created_at DESC
-            LIMIT 20
-        """
-        ).fetchall()
+    try:
+        response = (
+            supabase.table("churn_predictions")
+            .select("churn_probability, prediction, risk_level, created_at")
+            .order("created_at", desc=True)
+            .limit(20)
+            .execute()
+        )
+        # Convert to tuples to match template's row[0], row[1], row[2], row[3] indexing
+        rows = [
+            (
+                row["churn_probability"],
+                row["prediction"],
+                row["risk_level"],
+                row["created_at"],
+            )
+            for row in response.data
+        ]
+    except Exception as e:
+        print(f"History fetch error: {e}")
+        rows = []
 
     return render_template("history.html", rows=rows)
 
 
 @app.route("/dashboard")
 def dashboard():
-    with get_db() as conn:
-        today = conn.execute(
-            """
-            SELECT
-                COUNT(*) AS total,
-                AVG(churn_probability) AS avg_prob,
-                SUM(CASE WHEN churn_probability >= 60 THEN 1 ELSE 0 END) AS high_risk
-            FROM predictions
-            WHERE DATE(created_at) = DATE('now')
-        """
-        ).fetchone()
+    try:
+        # Fetch today's predictions
+        today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        response = (
+            supabase.table("churn_predictions")
+            .select("churn_probability, risk_level")
+            .gte("created_at", f"{today_str}T00:00:00+00:00")
+            .execute()
+        )
+        records = response.data
 
-        distribution_raw = conn.execute(
-            """
-            SELECT risk_level, COUNT(*)
-            FROM predictions
-            GROUP BY risk_level
-        """
-        ).fetchall()
+        # Aggregate in Python (replaces SQL aggregation)
+        total = len(records)
+        avg_prob = round(sum(r["churn_probability"] for r in records) / total, 2) if total else 0
+        high_risk = sum(1 for r in records if r["churn_probability"] >= 60)
 
-    distribution = {"Low": 0, "Medium": 0, "High": 0, "Critical": 0}
+        distribution = {"Low": 0, "Medium": 0, "High": 0, "Critical": 0}
+        for r in records:
+            level = r["risk_level"]
+            if level in distribution:
+                distribution[level] += 1
 
-    for level, count in distribution_raw:
-        if level in distribution:
-            distribution[level] = count
+    except Exception as e:
+        print(f"Dashboard fetch error: {e}")
+        total, avg_prob, high_risk = 0, 0, 0
+        distribution = {"Low": 0, "Medium": 0, "High": 0, "Critical": 0}
 
     return render_template(
         "dashboard.html",
-        total=today[0] or 0,
-        avg_prob=round(today[1], 2) if today[1] else 0,
-        high_risk=today[2] or 0,
+        total=total,
+        avg_prob=avg_prob,
+        high_risk=high_risk,
         distribution=distribution,
     )
 
@@ -174,9 +193,6 @@ def dashboard():
 # -------------------------------
 # Run App
 # -------------------------------
-init_db()
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-
-
-

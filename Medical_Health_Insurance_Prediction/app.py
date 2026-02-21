@@ -4,9 +4,6 @@ import pandas as pd
 from supabase import create_client
 import os
 from datetime import datetime, timezone
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__)
 
@@ -229,3 +226,4 @@ def dashboard():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+

@@ -7,29 +7,21 @@ from utils.model import (
 
 def render(model, model_columns, supabase_client):
 
-    st.markdown(
-        """
-        <div style="padding: 20px 0 0 0;">
-            <p style="font-size: 1.1rem; font-weight: 400;
-                      color: #6B7280;
-                      font-family: 'Inter', sans-serif;
-                      margin: 0 0 20px 0;">
-                Enter product and outlet details to get an instant sales forecast
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    st.markdown('<div class="predict-bg">', unsafe_allow_html=True)
+    st.markdown('<div class="page-wrapper">', unsafe_allow_html=True)
 
-    st.markdown('<div class="page-wrapper" style="padding-top:0;">', unsafe_allow_html=True)
+    st.markdown("""
+        <div class="page-title">Sales <span style="color:#0D9488;">Predictor</span></div>
+        <div class="page-subtitle" style="color:#64748B;">
+            Enter product and outlet details to get an instant sales forecast
+        </div>
+    """, unsafe_allow_html=True)
 
     col_item, col_outlet = st.columns(2)
 
     with col_item:
         st.markdown(
-            '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
-            'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
-            'margin:0 0 10px 0;">Item Details</p>',
+            '<p class="section-label">Item Details</p>',
             unsafe_allow_html=True,
         )
         item_weight      = st.number_input("Item Weight (kg)", min_value=1.0, max_value=25.0, value=12.0, step=0.1)
@@ -40,9 +32,7 @@ def render(model, model_columns, supabase_client):
 
     with col_outlet:
         st.markdown(
-            '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
-            'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
-            'margin:0 0 10px 0;">Outlet Details</p>',
+            '<p class="section-label">Outlet Details</p>',
             unsafe_allow_html=True,
         )
         outlet_id       = st.selectbox("Outlet ID", list(outlet_id_map.keys()))
@@ -107,4 +97,5 @@ def render(model, model_columns, supabase_client):
         except Exception as e:
             st.warning(f"Prediction made but could not save to database: {e}")
 
+    st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)

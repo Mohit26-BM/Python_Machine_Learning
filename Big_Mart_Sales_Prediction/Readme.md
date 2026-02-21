@@ -212,11 +212,20 @@ Credentials are stored securely in **Streamlit Secrets** and never committed to 
 
 ```
 Big_Mart_Sales_Prediction/
-├── app.py                  # Streamlit application
+├── app.py                  # Main app — config, CSS, tabs, routing
 ├── best_model.pkl          # Serialized XGBoost model
 ├── model_columns.pkl       # Feature column order
 ├── requirements.txt        # Python dependencies
-└── BigMart_Sales.ipynb     # Training notebook
+├── BigMart_Sales.ipynb     # Training notebook
+├── utils/
+│   ├── __init__.py
+│   ├── model.py            # Model loading and feature mappings
+│   └── database.py         # Supabase client and fetch helper
+└── pages/
+    ├── __init__.py
+    ├── predict.py          # Predict page
+    ├── dashboard.py        # Dashboard page
+    └── history.py          # History page
 ```
 
 ---

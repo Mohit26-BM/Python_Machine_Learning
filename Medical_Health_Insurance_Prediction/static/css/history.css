@@ -1,0 +1,131 @@
+/* ── History Base ─────────────────────────────────────────────────── */
+.history-body {
+  background: #F9FAFB;
+}
+
+.history-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+.history-header {
+  margin-bottom: 24px;
+}
+
+.history-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+.history-sub {
+  font-size: 0.88rem;
+  color: #64748B;
+  margin-top: 4px;
+}
+
+/* ── Table ────────────────────────────────────────────────────────── */
+.table-wrapper {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+  border: 1px solid #E2E8F0;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.history-table thead tr {
+  background: #1E40AF;
+}
+
+.history-table th {
+  padding: 14px 16px;
+  text-align: left;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+.history-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #F1F5F9;
+  color: #1E293B;
+}
+
+.history-table tr:last-child td {
+  border-bottom: none;
+}
+
+.history-table tbody tr:hover td {
+  background: #DBEAFE;
+}
+
+/* ── Charges & Timestamp ──────────────────────────────────────────── */
+.charges {
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.timestamp {
+  color: #60A5FA;
+  font-size: 0.8rem;
+}
+
+/* ── Badges ───────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-low       { background: #DCFCE7; color: #15803D; }
+.badge-medium    { background: #FEF3C7; color: #B45309; }
+.badge-high      { background: #FEE2E2; color: #B91C1C; }
+.badge-very-high { background: #EDE9FE; color: #6D28D9; }
+.badge-smoker    { background: #FEE2E2; color: #B91C1C; }
+.badge-nonsmoker { background: #DCFCE7; color: #15803D; }
+
+/* ── Empty State ──────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 56px;
+  color: #94A3B8;
+  font-size: 0.95rem;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────── */
+.footer-actions {
+  margin-top: 24px;
+}
+
+.btn-back {
+  display: inline-block;
+  padding: 10px 22px;
+  background: #EFF6FF;
+  color: #1E3A8A;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: #DBEAFE;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .history-table { font-size: 0.78rem; }
+  .history-table th,
+  .history-table td { padding: 10px 10px; }
+}

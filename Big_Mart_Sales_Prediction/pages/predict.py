@@ -10,10 +10,10 @@ def render(model, model_columns, supabase_client):
     st.markdown(
         """
         <div style="padding: 20px 0 0 0;">
-            <p style="font-size: 1.2rem; font-weight: 500;
-                      color: rgba(255,255,255,0.65);
+            <p style="font-size: 1.1rem; font-weight: 400;
+                      color: #6B7280;
                       font-family: 'Inter', sans-serif;
-                      margin: 0 0 24px 0;">
+                      margin: 0 0 20px 0;">
                 Enter product and outlet details to get an instant sales forecast
             </p>
         </div>
@@ -27,8 +27,8 @@ def render(model, model_columns, supabase_client):
 
     with col_item:
         st.markdown(
-            '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-            'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+            '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+            'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
             'margin:0 0 10px 0;">Item Details</p>',
             unsafe_allow_html=True,
         )
@@ -40,8 +40,8 @@ def render(model, model_columns, supabase_client):
 
     with col_outlet:
         st.markdown(
-            '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-            'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+            '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+            'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
             'margin:0 0 10px 0;">Outlet Details</p>',
             unsafe_allow_html=True,
         )
@@ -59,16 +59,16 @@ def render(model, model_columns, supabase_client):
 
     if predict_clicked:
         input_dict = {
-            "Item_Weight":             item_weight,
-            "Item_Fat_Content":        fat_content_map[item_fat_content],
-            "Item_Visibility":         item_visibility,
-            "Item_Type":               item_type_map[item_type],
-            "Item_MRP":                item_mrp,
-            "Outlet_Identifier":       outlet_id_map[outlet_id],
+            "Item_Weight":               item_weight,
+            "Item_Fat_Content":          fat_content_map[item_fat_content],
+            "Item_Visibility":           item_visibility,
+            "Item_Type":                 item_type_map[item_type],
+            "Item_MRP":                  item_mrp,
+            "Outlet_Identifier":         outlet_id_map[outlet_id],
             "Outlet_Establishment_Year": outlet_est_year,
-            "Outlet_Size":             outlet_size_map[outlet_size],
-            "Outlet_Location_Type":    outlet_location_map[outlet_location],
-            "Outlet_Type":             outlet_type_map[outlet_type],
+            "Outlet_Size":               outlet_size_map[outlet_size],
+            "Outlet_Location_Type":      outlet_location_map[outlet_location],
+            "Outlet_Type":               outlet_type_map[outlet_type],
         }
         input_df   = pd.DataFrame([input_dict])[model_columns]
         prediction = model.predict(input_df)[0]

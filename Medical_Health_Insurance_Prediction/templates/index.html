@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insurance Cost Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <span class="nav-brand">🏥 InsurePredict</span>
+      <div class="nav-links">
+        <a href="/" class="nav-link active">Predict</a>
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/history" class="nav-link">History</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Insurance Cost Predictor</h1>
+    <p>Enter your details below to get an instant estimate of your medical insurance charges</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="container">
+    <div class="form-card">
+      <h2 class="form-title">Patient Details</h2>
+
+      <form id="insuranceForm">
+        <div class="form-grid">
+
+          <!-- Age -->
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="e.g. 31" min="1" max="100" required>
+          </div>
+
+          <!-- Sex -->
+          <div class="form-group">
+            <label for="sex">Sex</label>
+            <select id="sex" required>
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+
+          <!-- BMI -->
+          <div class="form-group">
+            <label for="bmi">BMI</label>
+            <input type="number" id="bmi" placeholder="e.g. 25.74" step="0.01" min="10" max="60" required>
+          </div>
+
+          <!-- Children -->
+          <div class="form-group">
+            <label for="children">Number of Children</label>
+            <input type="number" id="children" placeholder="e.g. 0" min="0" max="10" required>
+          </div>
+
+          <!-- Smoker -->
+          <div class="form-group">
+            <label for="smoker">Smoker</label>
+            <select id="smoker" required>
+              <option value="">Select</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+
+          <!-- Region -->
+          <div class="form-group">
+            <label for="region">Region</label>
+            <select id="region" required>
+              <option value="">Select</option>
+              <option value="southwest">Southwest</option>
+              <option value="southeast">Southeast</option>
+              <option value="northwest">Northwest</option>
+              <option value="northeast">Northeast</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="loading" id="loading">Predicting...</div>
+        <button type="submit" class="btn-predict">Predict Insurance Cost</button>
+      </form>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="resultModal" class="modal">
+      <div class="modal-content">
+        <button class="close-btn">&times;</button>
+        <div id="modalResult"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

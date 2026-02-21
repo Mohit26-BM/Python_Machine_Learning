@@ -39,8 +39,8 @@ def render(supabase_client):
         )
 
         st.markdown(
-            '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-            'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+            '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+            'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
             'margin:0 0 10px 0;">Filter Records</p>',
             unsafe_allow_html=True,
         )
@@ -73,16 +73,16 @@ def render(supabase_client):
         ].reset_index(drop=True)
 
         st.markdown(
-            f'<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-            f'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+            f'<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+            f'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
             f'margin:16px 0 10px 0;">Showing {len(filtered_df)} of {len(log_df)} records</p>',
             unsafe_allow_html=True,
         )
 
         st.dataframe(
             filtered_df.style
-                .highlight_max(subset=["Predicted_Sales"], color="rgba(124,106,247,0.18)")
-                .highlight_min(subset=["Predicted_Sales"], color="rgba(244,114,182,0.14)"),
+                .highlight_max(subset=["Predicted_Sales"], color="#DBEAFE")
+                .highlight_min(subset=["Predicted_Sales"], color="#FEE2E2"),
             use_container_width=True,
             height=480,
         )

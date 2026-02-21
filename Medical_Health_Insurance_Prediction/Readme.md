@@ -6,7 +6,7 @@ This project predicts **medical insurance charges** using machine learning regre
 
 The full pipeline covers exploratory data analysis (EDA), data preprocessing, model training, hyperparameter tuning, performance comparison, and deployment as a live Flask web application backed by a persistent cloud database.
 
-🔗 **Live Demo:** [Medical Insurance Cost Predictor](#) *(add your Render URL here)*
+🔗 **Live Demo:** [Medical Insurance Cost Predictor](https://insurance-predictor1.onrender.com)
 
 ---
 

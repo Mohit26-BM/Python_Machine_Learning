@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insurance Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body class="dash-body">
+
+  <!-- Navbar (reuses style.css navbar) -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <span class="nav-brand">🏥 InsurePredict</span>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Predict</a>
+        <a href="/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/history" class="nav-link">History</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-container">
+
+    <div class="dash-header">
+      <h1 class="dash-title">Dashboard</h1>
+      <p class="dash-sub">Today's insurance prediction analytics</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon blue-icon">📊</div>
+        <div class="kpi-value">{{ total }}</div>
+        <div class="kpi-label">Predictions Today</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon green-icon">💰</div>
+        <div class="kpi-value">${{ "{:,.0f}".format(avg_charges) }}</div>
+        <div class="kpi-label">Avg Predicted Cost</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon amber-icon">⚠️</div>
+        <div class="kpi-value">{{ high_cost }}</div>
+        <div class="kpi-label">High Cost Customers</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon red-icon">🚬</div>
+        <div class="kpi-value">{{ smokers }}</div>
+        <div class="kpi-label">Smokers Today</div>
+      </div>
+    </div>
+
+    <!-- Row 1: Line + Donut -->
+    <div class="chart-row">
+      <div class="chart-card wide">
+        <div class="chart-header">
+          <h3>Predicted Charges Over Time</h3>
+          <span class="badge-blue">Today</span>
+        </div>
+        <canvas id="lineChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Risk Distribution</h3>
+          <span class="badge-amber">Risk</span>
+        </div>
+        <canvas id="donutChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Row 2: Age + Smoker -->
+    <div class="chart-row equal">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Predictions by Age Group</h3>
+          <span class="badge-green">Age</span>
+        </div>
+        <canvas id="ageChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Avg Cost: Smoker vs Non-Smoker</h3>
+          <span class="badge-amber">Comparison</span>
+        </div>
+        <canvas id="smokerChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const chargesOverTime = JSON.parse('{{ charges_over_time | default([]) | tojson | safe }}');
+const ageBuckets      = JSON.parse('{{ age_buckets | default({}) | tojson | safe }}');
+const riskDist        = JSON.parse('{{ distribution | default({}) | tojson | safe }}');
+const smokerAvg       = JSON.parse('{{ smoker_avg | default(0) | tojson | safe }}');
+const nonsmokerAvg    = JSON.parse('{{ nonsmoker_avg | default(0) | tojson | safe }}');
+      Chart.defaults.font.family = "'Segoe UI', sans-serif";
+      Chart.defaults.color = '#64748B';
+
+      // ── Line Chart ─────────────────────────────────────────────
+      new Chart(document.getElementById('lineChart'), {
+        type: 'line',
+        data: {
+          labels: chargesOverTime.map((_, i) => '#' + (i + 1)),
+          datasets: [{
+            label: 'Predicted Charges ($)',
+            data: chargesOverTime,
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59,130,246,0.08)',
+            borderWidth: 2.5,
+            pointBackgroundColor: '#3B82F6',
+            pointRadius: 4,
+            tension: 0.4,
+            fill: true,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              grid: { color: '#F1F5F9' },
+              ticks: { callback: v => '$' + v.toLocaleString() }
+            },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // ── Donut Chart ────────────────────────────────────────────
+      new Chart(document.getElementById('donutChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Low', 'Medium', 'High', 'Very High'],
+          datasets: [{
+            data: [
+              riskDist.Low || 0,
+              riskDist.Medium || 0,
+              riskDist.High || 0,
+              riskDist['Very High'] || 0
+            ],
+            backgroundColor: ['#22C55E', '#F59E0B', '#EF4444', '#7C3AED'],
+            borderWidth: 2,
+            borderColor: '#fff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { padding: 14, font: { size: 12 } }
+            }
+          }
+        }
+      });
+
+      // ── Age Bar Chart ──────────────────────────────────────────
+      new Chart(document.getElementById('ageChart'), {
+        type: 'bar',
+        data: {
+          labels: Object.keys(ageBuckets),
+          datasets: [{
+            label: 'Predictions',
+            data: Object.values(ageBuckets),
+            backgroundColor: '#10B981',
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: '#F1F5F9' },
+              ticks: { precision: 0 }
+            },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // ── Smoker Bar Chart ───────────────────────────────────────
+      new Chart(document.getElementById('smokerChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Smoker', 'Non-Smoker'],
+          datasets: [{
+            label: 'Avg Charges ($)',
+            data: [smokerAvg, nonsmokerAvg],
+            backgroundColor: ['#F59E0B', '#10B981'],
+            borderRadius: 6,
+            borderSkipped: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: '#F1F5F9' },
+              ticks: { callback: v => '$' + v.toLocaleString() }
+            },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+    });
+  </script>
+
+</body>
+</html>

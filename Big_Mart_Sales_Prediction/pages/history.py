@@ -3,14 +3,13 @@ from utils.database import fetch_predictions
 
 def render(supabase_client):
 
+    st.markdown('<div class="history-bg">', unsafe_allow_html=True)
     st.markdown('<div class="page-wrapper">', unsafe_allow_html=True)
-    st.markdown(
-        """
-        <div class="page-title">Prediction <span class="accent">History</span></div>
-        <div class="page-subtitle">Full log of every prediction — browse, filter, and export</div>
-        """,
-        unsafe_allow_html=True,
-    )
+
+    st.markdown("""
+        <div class="page-title">Prediction <span style="color:#1E40AF;">History</span></div>
+        <div class="page-subtitle" style="color:#64748B;">Full log of every prediction — browse, filter, and export</div>
+    """, unsafe_allow_html=True)
 
     try:
         log_df = fetch_predictions(supabase_client)
@@ -38,12 +37,7 @@ def render(supabase_client):
             unsafe_allow_html=True,
         )
 
-        st.markdown(
-            '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
-            'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
-            'margin:0 0 10px 0;">Filter Records</p>',
-            unsafe_allow_html=True,
-        )
+        st.markdown('<p class="section-label">Filter Records</p>', unsafe_allow_html=True)
 
         f1, f2, f3 = st.columns(3)
         with f1:
@@ -73,9 +67,8 @@ def render(supabase_client):
         ].reset_index(drop=True)
 
         st.markdown(
-            f'<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
-            f'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
-            f'margin:16px 0 10px 0;">Showing {len(filtered_df)} of {len(log_df)} records</p>',
+            f'<p class="section-label" style="margin-top:16px;">'
+            f'Showing {len(filtered_df)} of {len(log_df)} records</p>',
             unsafe_allow_html=True,
         )
 
@@ -97,16 +90,12 @@ def render(supabase_client):
         )
 
     except Exception:
-        st.markdown(
-            """
-            <div class="card" style="text-align:center; padding:64px 32px;">
+        st.markdown("""
+            <div class="metric-card" style="text-align:center; padding:64px 32px;">
                 <div class="page-title" style="font-size:1.5rem;">No history yet</div>
-                <div class="page-subtitle" style="margin-bottom:0">
-                    Head over to the Predict tab and make your first prediction.
-                </div>
+                <div class="page-subtitle">Head over to the Predict tab and make your first prediction.</div>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        """, unsafe_allow_html=True)
 
+    st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)

@@ -41,72 +41,72 @@ def render(supabase_client):
         r1c1, r1c2 = st.columns(2)
         with r1c1:
             st.markdown(
-                '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-                'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+                '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+                'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
                 'margin:0 0 10px 0;">Predicted Sales Over Time</p>',
                 unsafe_allow_html=True,
             )
             ts = log_df[["Predicted_Sales"]].reset_index()
             ts.columns = ["Prediction #", "Predicted Sales (₹)"]
-            st.line_chart(ts.set_index("Prediction #"), color="#7c6af7")
+            st.line_chart(ts.set_index("Prediction #"), color="#3B82F6")
 
         with r1c2:
             st.markdown(
-                '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-                'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+                '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+                'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
                 'margin:0 0 10px 0;">Avg Sales by Outlet Type</p>',
                 unsafe_allow_html=True,
             )
             ot = log_df.groupby("Outlet_Type")["Predicted_Sales"].mean().reset_index()
             ot.columns = ["Outlet Type", "Avg Sales (₹)"]
-            st.bar_chart(ot.set_index("Outlet Type"), color="#7c6af7")
+            st.bar_chart(ot.set_index("Outlet Type"), color="#3B82F6")
 
         r2c1, r2c2 = st.columns(2)
         with r2c1:
             st.markdown(
-                '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-                'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+                '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+                'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
                 'margin:0 0 10px 0;">Avg Sales by Item Type</p>',
                 unsafe_allow_html=True,
             )
             it = log_df.groupby("Item_Type")["Predicted_Sales"].mean().reset_index()
             it.columns = ["Item Type", "Avg Sales (₹)"]
-            st.bar_chart(it.set_index("Item Type"), color="#a78bfa")
+            st.bar_chart(it.set_index("Item Type"), color="#60A5FA")
 
         with r2c2:
             st.markdown(
-                '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-                'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+                '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+                'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
                 'margin:0 0 10px 0;">Avg Sales by Location Tier</p>',
                 unsafe_allow_html=True,
             )
             lt = log_df.groupby("Outlet_Location_Type")["Predicted_Sales"].mean().reset_index()
             lt.columns = ["Location Tier", "Avg Sales (₹)"]
-            st.bar_chart(lt.set_index("Location Tier"), color="#6ee7b7")
+            st.bar_chart(lt.set_index("Location Tier"), color="#93C5FD")
 
         r3c1, r3c2 = st.columns(2)
         with r3c1:
             if len(log_df) >= 3:
                 st.markdown(
-                    '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-                    'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+                    '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+                    'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
                     'margin:0 0 10px 0;">Item MRP vs Predicted Sales</p>',
                     unsafe_allow_html=True,
                 )
                 sc = log_df[["Item_MRP", "Predicted_Sales"]].copy()
                 sc.columns = ["Item MRP (₹)", "Predicted Sales (₹)"]
-                st.scatter_chart(sc, x="Item MRP (₹)", y="Predicted Sales (₹)", color="#7c6af7")
+                st.scatter_chart(sc, x="Item MRP (₹)", y="Predicted Sales (₹)", color="#3B82F6")
 
         with r3c2:
             st.markdown(
-                '<p style="font-family:\'Inter\',sans-serif; font-size:0.75rem; font-weight:700;'
-                'letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.32);'
+                '<p style="font-family:\'Inter\',sans-serif; font-size:0.72rem; font-weight:700;'
+                'letter-spacing:0.1em; text-transform:uppercase; color:#6B7280;'
                 'margin:0 0 10px 0;">Avg Sales by Fat Content</p>',
                 unsafe_allow_html=True,
             )
             fc = log_df.groupby("Item_Fat_Content")["Predicted_Sales"].mean().reset_index()
             fc.columns = ["Fat Content", "Avg Sales (₹)"]
-            st.bar_chart(fc.set_index("Fat Content"), color="#f472b6")
+            st.bar_chart(fc.set_index("Fat Content"), color="#BFDBFE")
 
     except Exception:
         st.markdown(

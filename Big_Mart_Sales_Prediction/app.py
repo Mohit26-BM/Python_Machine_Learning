@@ -22,66 +22,84 @@ st.markdown(
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, [data-testid="stAppViewContainer"] {
-    background: #0a0a0f !important;
+    background: #F9FBFD !important;
     font-family: 'Inter', sans-serif;
-    color: #e8e6f0;
+    color: #1F2937;
 }
 
-[data-testid="stAppViewContainer"] > .main { background: #0a0a0f !important; }
+[data-testid="stAppViewContainer"] > .main { background: #F9FBFD !important; }
 [data-testid="stHeader"] { background: transparent !important; }
 [data-testid="stSidebar"] { display: none !important; }
 .block-container { padding: 0 !important; max-width: 100% !important; }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0a0a0f; }
-::-webkit-scrollbar-thumb { background: #3d3a5c; border-radius: 2px; }
+::-webkit-scrollbar-track { background: #F9FBFD; }
+::-webkit-scrollbar-thumb { background: #DBEAFE; border-radius: 2px; }
 
+/* ── Navbar ───────────────────────────────────────────────────────── */
+.navbar-wrapper {
+    background: #FFFFFF;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 0 48px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* ── Page Wrapper ─────────────────────────────────────────────────── */
 .page-wrapper {
     padding: 24px 48px 80px;
     max-width: 1280px;
     margin: 0 auto;
 }
 
+/* ── Typography ───────────────────────────────────────────────────── */
 .page-title {
     font-family: 'Inter', sans-serif;
-    font-size: 2.4rem;
+    font-size: 2rem;
     font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+    color: #1F2937;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
     margin-bottom: 6px;
 }
 
 .page-subtitle {
     font-size: 0.93rem;
-    color: rgba(255,255,255,0.38);
-    font-weight: 300;
-    margin-bottom: 36px;
+    color: #6B7280;
+    font-weight: 400;
+    margin-bottom: 32px;
 }
 
-.accent { color: #7c6af7; }
+.accent { color: #3B82F6; }
 
+/* ── Cards ────────────────────────────────────────────────────────── */
 .card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 16px;
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
     padding: 28px;
     margin-bottom: 20px;
-    transition: border-color 0.2s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.card:hover { border-color: rgba(124,106,247,0.22); }
+.card:hover {
+    border-color: #DBEAFE;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.08);
+}
 
 .card-title {
     font-family: 'Inter', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.32);
-    margin-bottom: 20px;
+    color: #6B7280;
+    margin-bottom: 18px;
 }
 
+/* ── Metric Row ───────────────────────────────────────────────────── */
 .metric-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -90,30 +108,33 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 .metric-card {
-    background: rgba(124,106,247,0.07);
-    border: 1px solid rgba(124,106,247,0.16);
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 22px;
     text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .metric-value {
     font-family: 'Inter', sans-serif;
     font-size: 1.7rem;
     font-weight: 800;
-    color: #fff;
+    color: #1F2937;
     line-height: 1;
     margin-bottom: 6px;
 }
 
 .metric-label {
     font-size: 0.76rem;
-    color: rgba(255,255,255,0.38);
+    color: #6B7280;
+    font-weight: 500;
 }
 
+/* ── Result Banner ────────────────────────────────────────────────── */
 .result-banner {
-    background: linear-gradient(135deg, rgba(124,106,247,0.14) 0%, rgba(99,179,237,0.07) 100%);
-    border: 1px solid rgba(124,106,247,0.28);
+    background: linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);
+    border: 1px solid #BFDBFE;
     border-radius: 16px;
     padding: 32px;
     text-align: center;
@@ -121,11 +142,11 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 .result-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(124,106,247,0.8);
+    color: #3B82F6;
     margin-bottom: 8px;
 }
 
@@ -133,67 +154,114 @@ html, body, [data-testid="stAppViewContainer"] {
     font-family: 'Inter', sans-serif;
     font-size: 3rem;
     font-weight: 800;
-    color: #fff;
+    color: #1F2937;
     letter-spacing: -0.03em;
 }
 
 .result-sub {
     font-size: 0.8rem;
-    color: rgba(255,255,255,0.32);
+    color: #6B7280;
     margin-top: 8px;
 }
 
+/* ── Widget Labels ────────────────────────────────────────────────── */
 label[data-testid="stWidgetLabel"] p {
-    color: rgba(255,255,255,0.55) !important;
-    font-size: 0.82rem !important;
+    color: #374151 !important;
+    font-size: 0.84rem !important;
     font-family: 'Inter', sans-serif !important;
     font-weight: 500 !important;
 }
 
+/* ── Inputs ───────────────────────────────────────────────────────── */
+[data-testid="stNumberInput"] input,
+[data-testid="stSelectbox"] div[data-baseweb="select"] {
+    background: #FFFFFF !important;
+    border-color: #E5E7EB !important;
+    color: #1F2937 !important;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────── */
 .stButton > button {
-    background: #7c6af7 !important;
+    background: #3B82F6 !important;
     color: #fff !important;
     border: none !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     font-family: 'Inter', sans-serif !important;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
     font-size: 0.95rem !important;
-    padding: 14px 32px !important;
+    padding: 12px 28px !important;
     width: 100% !important;
     transition: all 0.2s ease !important;
-    box-shadow: 0 4px 20px rgba(124,106,247,0.3) !important;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.25) !important;
 }
 
 .stButton > button:hover {
-    background: #6a58e8 !important;
-    box-shadow: 0 6px 28px rgba(124,106,247,0.48) !important;
+    background: #2563EB !important;
+    box-shadow: 0 4px 16px rgba(59,130,246,0.35) !important;
     transform: translateY(-1px) !important;
 }
 
+/* Secondary nav buttons */
+.stButton > button[kind="secondary"] {
+    background: #FFFFFF !important;
+    color: #374151 !important;
+    border: 1px solid #E5E7EB !important;
+    box-shadow: none !important;
+}
+
+.stButton > button[kind="secondary"]:hover {
+    background: #DBEAFE !important;
+    color: #2563EB !important;
+    border-color: #BFDBFE !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
 .stDownloadButton > button {
-    background: rgba(255,255,255,0.04) !important;
-    color: rgba(255,255,255,0.65) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
+    background: #FFFFFF !important;
+    color: #374151 !important;
+    border: 1px solid #E5E7EB !important;
     border-radius: 10px !important;
     font-family: 'Inter', sans-serif !important;
     width: 100% !important;
+    box-shadow: none !important;
 }
 
+.stDownloadButton > button:hover {
+    background: #DBEAFE !important;
+    color: #2563EB !important;
+    border-color: #BFDBFE !important;
+}
+
+/* ── Info / Success boxes ─────────────────────────────────────────── */
 [data-testid="stInfo"] {
-    background: rgba(124,106,247,0.07) !important;
-    border: 1px solid rgba(124,106,247,0.18) !important;
+    background: #EFF6FF !important;
+    border: 1px solid #BFDBFE !important;
     border-radius: 10px !important;
+    color: #1E40AF !important;
 }
 
 [data-testid="stSuccess"] {
-    background: rgba(72,199,142,0.08) !important;
-    border: 1px solid rgba(72,199,142,0.22) !important;
+    background: #F0FDF4 !important;
+    border: 1px solid #BBF7D0 !important;
     border-radius: 10px !important;
 }
 
-[data-testid="stCaptionContainer"] p { color: rgba(255,255,255,0.28) !important; }
+[data-testid="stCaptionContainer"] p {
+    color: #9CA3AF !important;
+}
 
-hr { border-color: rgba(255,255,255,0.05) !important; margin: 28px 0 !important; }
+/* ── Dataframe ────────────────────────────────────────────────────── */
+[data-testid="stDataFrame"] {
+    border: 1px solid #E5E7EB !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+hr {
+    border-color: #E5E7EB !important;
+    margin: 20px 0 !important;
+}
 </style>
 """,
     unsafe_allow_html=True,
@@ -208,14 +276,15 @@ if "page" not in st.session_state:
     st.session_state.page = "Predict"
 
 # ── Navbar ─────────────────────────────────────────────────────────────────────
+st.markdown('<div class="navbar-wrapper">', unsafe_allow_html=True)
 nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([3, 1, 1, 1])
 
 with nav_col1:
     st.markdown(
         """
-        <div style="padding: 18px 0 10px; font-family: 'Inter', sans-serif;
-                    font-weight: 800; font-size: 3.5rem; color: #fff; letter-spacing:-0.02em;">
-            Big<span style="color:#7c6af7;">Mart</span> Predictor
+        <div style="padding: 16px 0 10px; font-family: 'Inter', sans-serif;
+                    font-weight: 800; font-size: 1.5rem; color: #1F2937; letter-spacing:-0.02em;">
+            Big<span style="color:#3B82F6;">Mart</span> Predictor
         </div>
         """,
         unsafe_allow_html=True,
@@ -245,6 +314,7 @@ with nav_col4:
         st.session_state.page = "History"
         st.rerun()
 
+st.markdown("</div>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
 
 # ── Routing ────────────────────────────────────────────────────────────────────

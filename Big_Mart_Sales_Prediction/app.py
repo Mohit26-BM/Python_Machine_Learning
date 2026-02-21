@@ -14,127 +14,119 @@ st.set_page_config(
 )
 
 # ── Global CSS ─────────────────────────────────────────────────────────────────
-st.markdown(
-    """
+st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, [data-testid="stAppViewContainer"] {
-    background: #F9FBFD !important;
     font-family: 'Inter', sans-serif;
     color: #1F2937;
 }
 
-[data-testid="stAppViewContainer"] > .main { background: #F9FBFD !important; }
 [data-testid="stHeader"] { background: transparent !important; }
 [data-testid="stSidebar"] { display: none !important; }
 .block-container { padding: 0 !important; max-width: 100% !important; }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #F9FBFD; }
-::-webkit-scrollbar-thumb { background: #DBEAFE; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
 
-/* ── Navbar ───────────────────────────────────────────────────────── */
-.navbar-wrapper {
-    background: #FFFFFF;
-    border-bottom: 1px solid #E5E7EB;
-    padding: 0 48px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+/* ── Brand Header ─────────────────────────────────────────────────── */
+.brand-bar {
+    background: #1E293B;
+    padding: 14px 48px;
+    display: flex;
+    align-items: center;
 }
 
-/* ── Page Wrapper ─────────────────────────────────────────────────── */
+.brand-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.brand-accent { color: #60A5FA; }
+
+/* ── Tabs ─────────────────────────────────────────────────────────── */
+[data-testid="stTabs"] {
+    background: #1E293B !important;
+    padding: 0 48px !important;
+}
+
+button[data-baseweb="tab"] {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: rgba(255,255,255,0.6) !important;
+    padding: 14px 20px !important;
+    border-bottom: 2px solid transparent !important;
+    background: transparent !important;
+}
+
+button[data-baseweb="tab"]:hover {
+    color: #fff !important;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #60A5FA !important;
+    border-bottom: 2px solid #60A5FA !important;
+    font-weight: 600 !important;
+}
+
+[data-testid="stTabPanel"] {
+    padding: 0 !important;
+}
+
+/* ── Shared Page Wrapper ──────────────────────────────────────────── */
 .page-wrapper {
-    padding: 24px 48px 80px;
+    padding: 28px 48px 80px;
     max-width: 1280px;
     margin: 0 auto;
 }
 
-/* ── Typography ───────────────────────────────────────────────────── */
+/* ── Shared Typography ────────────────────────────────────────────── */
 .page-title {
-    font-family: 'Inter', sans-serif;
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 800;
-    color: #1F2937;
     letter-spacing: -0.02em;
     line-height: 1.15;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .page-subtitle {
-    font-size: 0.93rem;
-    color: #6B7280;
+    font-size: 0.9rem;
     font-weight: 400;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
 }
 
-.accent { color: #3B82F6; }
+/* ══════════════════════════════════════════════════════════════════
+   PREDICT PAGE COLORS
+══════════════════════════════════════════════════════════════════ */
+.predict-bg { background: #F8FAFC; }
 
-/* ── Cards ────────────────────────────────────────────────────────── */
-.card {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 28px;
-    margin-bottom: 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    transition: border-color 0.2s, box-shadow 0.2s;
+.predict-bg .page-title { color: #1E293B; }
+.predict-bg .page-subtitle { color: #64748B; }
+
+.predict-bg label[data-testid="stWidgetLabel"] p {
+    color: #374151 !important;
+    font-size: 0.84rem !important;
+    font-weight: 500 !important;
 }
 
-.card:hover {
-    border-color: #DBEAFE;
-    box-shadow: 0 4px 16px rgba(59,130,246,0.08);
-}
-
-.card-title {
-    font-family: 'Inter', sans-serif;
+.predict-bg .section-label {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #6B7280;
-    margin-bottom: 18px;
+    color: #64748B;
+    margin-bottom: 10px;
 }
 
-/* ── Metric Row ───────────────────────────────────────────────────── */
-.metric-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-bottom: 24px;
-}
-
-.metric-card {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 22px;
-    text-align: center;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-}
-
-.metric-value {
-    font-family: 'Inter', sans-serif;
-    font-size: 1.7rem;
-    font-weight: 800;
-    color: #1F2937;
-    line-height: 1;
-    margin-bottom: 6px;
-}
-
-.metric-label {
-    font-size: 0.76rem;
-    color: #6B7280;
-    font-weight: 500;
-}
-
-/* ── Result Banner ────────────────────────────────────────────────── */
 .result-banner {
-    background: linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%);
-    border: 1px solid #BFDBFE;
+    background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+    border: 1px solid #86EFAC;
     border-radius: 16px;
     padding: 32px;
     text-align: center;
@@ -146,15 +138,14 @@ html, body, [data-testid="stAppViewContainer"] {
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #3B82F6;
+    color: #16A34A;
     margin-bottom: 8px;
 }
 
 .result-value {
-    font-family: 'Inter', sans-serif;
     font-size: 3rem;
     font-weight: 800;
-    color: #1F2937;
+    color: #15803D;
     letter-spacing: -0.03em;
 }
 
@@ -164,163 +155,138 @@ html, body, [data-testid="stAppViewContainer"] {
     margin-top: 8px;
 }
 
-/* ── Widget Labels ────────────────────────────────────────────────── */
-label[data-testid="stWidgetLabel"] p {
-    color: #374151 !important;
-    font-size: 0.84rem !important;
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 500 !important;
-}
-
-/* ── Inputs ───────────────────────────────────────────────────────── */
-[data-testid="stNumberInput"] input,
-[data-testid="stSelectbox"] div[data-baseweb="select"] {
-    background: #FFFFFF !important;
-    border-color: #E5E7EB !important;
-    color: #1F2937 !important;
-}
-
-/* ── Buttons ──────────────────────────────────────────────────────── */
-.stButton > button {
-    background: #3B82F6 !important;
+/* Predict Button — teal */
+.predict-bg .stButton > button {
+    background: #0D9488 !important;
     color: #fff !important;
     border: none !important;
     border-radius: 10px !important;
-    font-family: 'Inter', sans-serif !important;
     font-weight: 600 !important;
     font-size: 0.95rem !important;
     padding: 12px 28px !important;
     width: 100% !important;
+    box-shadow: 0 2px 8px rgba(13,148,136,0.3) !important;
     transition: all 0.2s ease !important;
-    box-shadow: 0 2px 8px rgba(59,130,246,0.25) !important;
 }
 
-.stButton > button:hover {
-    background: #2563EB !important;
-    box-shadow: 0 4px 16px rgba(59,130,246,0.35) !important;
+.predict-bg .stButton > button:hover {
+    background: #0F766E !important;
+    box-shadow: 0 4px 16px rgba(13,148,136,0.4) !important;
     transform: translateY(-1px) !important;
 }
 
-/* Secondary nav buttons */
-.stButton > button[kind="secondary"] {
-    background: #FFFFFF !important;
-    color: #374151 !important;
-    border: 1px solid #E5E7EB !important;
-    box-shadow: none !important;
+[data-testid="stInfo"] {
+    background: #F0FDF4 !important;
+    border: 1px solid #86EFAC !important;
+    border-radius: 10px !important;
 }
 
-.stButton > button[kind="secondary"]:hover {
-    background: #DBEAFE !important;
-    color: #2563EB !important;
-    border-color: #BFDBFE !important;
-    box-shadow: none !important;
-    transform: none !important;
+/* ══════════════════════════════════════════════════════════════════
+   DASHBOARD PAGE COLORS
+══════════════════════════════════════════════════════════════════ */
+.dashboard-bg { background: #F1F5F9; }
+
+.dashboard-bg .page-title { color: #1E293B; }
+.dashboard-bg .page-subtitle { color: #64748B; }
+
+.metric-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
 }
 
+.metric-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.metric-value {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #1E293B;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.metric-label {
+    font-size: 0.76rem;
+    color: #64748B;
+    font-weight: 500;
+}
+
+.dashboard-bg .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 10px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   HISTORY PAGE COLORS
+══════════════════════════════════════════════════════════════════ */
+.history-bg { background: #F9FAFB; }
+
+.history-bg .page-title { color: #1E293B; }
+.history-bg .page-subtitle { color: #64748B; }
+
+.history-bg .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #64748B;
+    margin-bottom: 10px;
+}
+
+/* ── Download Button ──────────────────────────────────────────────── */
 .stDownloadButton > button {
     background: #FFFFFF !important;
     color: #374151 !important;
-    border: 1px solid #E5E7EB !important;
+    border: 1px solid #E2E8F0 !important;
     border-radius: 10px !important;
-    font-family: 'Inter', sans-serif !important;
     width: 100% !important;
-    box-shadow: none !important;
+    font-weight: 500 !important;
 }
 
 .stDownloadButton > button:hover {
     background: #DBEAFE !important;
-    color: #2563EB !important;
+    color: #1E40AF !important;
     border-color: #BFDBFE !important;
 }
 
-/* ── Info / Success boxes ─────────────────────────────────────────── */
-[data-testid="stInfo"] {
-    background: #EFF6FF !important;
-    border: 1px solid #BFDBFE !important;
-    border-radius: 10px !important;
-    color: #1E40AF !important;
-}
+/* ── Caption ──────────────────────────────────────────────────────── */
+[data-testid="stCaptionContainer"] p { color: #9CA3AF !important; }
 
-[data-testid="stSuccess"] {
-    background: #F0FDF4 !important;
-    border: 1px solid #BBF7D0 !important;
-    border-radius: 10px !important;
-}
-
-[data-testid="stCaptionContainer"] p {
-    color: #9CA3AF !important;
-}
-
-/* ── Dataframe ────────────────────────────────────────────────────── */
-[data-testid="stDataFrame"] {
-    border: 1px solid #E5E7EB !important;
-    border-radius: 12px !important;
-    overflow: hidden;
-}
-
-hr {
-    border-color: #E5E7EB !important;
-    margin: 20px 0 !important;
-}
+hr { border-color: #E2E8F0 !important; margin: 16px 0 !important; }
 </style>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
 # ── Load Resources ─────────────────────────────────────────────────────────────
 model, model_columns = load_model()
 supabase_client      = init_supabase()
 
-# ── Session State ──────────────────────────────────────────────────────────────
-if "page" not in st.session_state:
-    st.session_state.page = "Predict"
+# ── Brand Header ───────────────────────────────────────────────────────────────
+st.markdown("""
+    <div class="brand-bar">
+        <span class="brand-title">Big<span class="brand-accent">Mart</span> Predictor 🛒</span>
+    </div>
+""", unsafe_allow_html=True)
 
-# ── Navbar ─────────────────────────────────────────────────────────────────────
-st.markdown('<div class="navbar-wrapper">', unsafe_allow_html=True)
-nav_col1, nav_col2, nav_col3, nav_col4 = st.columns([3, 1, 1, 1])
+# ── Tabs Navigation ────────────────────────────────────────────────────────────
+tab1, tab2, tab3 = st.tabs(["🔮  Predict", "📊  Dashboard", "📋  History"])
 
-with nav_col1:
-    st.markdown(
-        """
-        <div style="padding: 16px 0 10px; font-family: 'Inter', sans-serif;
-                    font-weight: 800; font-size: 1.5rem; color: #1F2937; letter-spacing:-0.02em;">
-            Big<span style="color:#3B82F6;">Mart</span> Predictor
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-with nav_col2:
-    if st.button(
-        "Predict", key="nav_predict",
-        type="primary" if st.session_state.page == "Predict" else "secondary",
-    ):
-        st.session_state.page = "Predict"
-        st.rerun()
-
-with nav_col3:
-    if st.button(
-        "Dashboard", key="nav_dash",
-        type="primary" if st.session_state.page == "Dashboard" else "secondary",
-    ):
-        st.session_state.page = "Dashboard"
-        st.rerun()
-
-with nav_col4:
-    if st.button(
-        "History", key="nav_history",
-        type="primary" if st.session_state.page == "History" else "secondary",
-    ):
-        st.session_state.page = "History"
-        st.rerun()
-
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<hr>", unsafe_allow_html=True)
-
-# ── Routing ────────────────────────────────────────────────────────────────────
-if st.session_state.page == "Predict":
+with tab1:
     render_predict(model, model_columns, supabase_client)
-elif st.session_state.page == "Dashboard":
+
+with tab2:
     render_dashboard(supabase_client)
-elif st.session_state.page == "History":
+
+with tab3:
     render_history(supabase_client)

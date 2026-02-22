@@ -3,7 +3,6 @@ import pickle
 import pandas as pd
 from supabase import create_client
 import os
-from datetime import datetime, timezone
 
 app = Flask(__name__)
 
@@ -160,7 +159,6 @@ def dashboard():
         response = (
             supabase.table("churn_predictions")
             .select("churn_probability, risk_level")
-            .gte("created_at", f"{today_str}T00:00:00+00:00")
             .execute()
         )
         records = response.data
@@ -196,3 +194,4 @@ def dashboard():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+

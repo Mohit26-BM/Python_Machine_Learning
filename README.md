@@ -19,7 +19,7 @@ Each project is self-contained and demonstrates a complete ML workflow from data
 | Classification | [Customer Churn Prediction](https://customer-churn-prediction-x9i2.onrender.com/)|
 | Classification | Autism Prediction                           |
 | Classification | Rainfall Prediction                         |
-| Classification | Loan Approval Prediction                    |
+| Classification | [Loan Approval Prediction](https://loan-approval-1-2wn7.onrender.com/)|
 | Classification | Loan Approval Prediction with PySpark       |
 | Regression     | [Medical Insurance Cost Prediction](https://insurance-predictor1.onrender.com)|
 | Regression     | House Price Prediction                      |

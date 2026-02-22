@@ -1,106 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Insurance Cost Predictor</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-inner">
-      <span class="nav-brand">🏥 InsurePredict</span>
-      <div class="nav-links">
-        <a href="/" class="nav-link active">Predict</a>
-        <a href="/dashboard" class="nav-link">Dashboard</a>
-        <a href="/history" class="nav-link">History</a>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>InsurePredict — Medical Insurance Cost Predictor</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+   </head>
+   <body>
+      <!-- Navbar -->
+      <nav class="navbar">
+         <div class="nav-inner">
+            <span class="nav-brand">🏥 InsurePredict</span>
+            <div class="nav-links">
+               <a href="/" class="nav-link active">Predict</a>
+               <a href="/dashboard" class="nav-link">Dashboard</a>
+               <a href="/history" class="nav-link">History</a>
+            </div>
+         </div>
+      </nav>
+      <!-- ═══════════════════════════════════════════════
+         LANDING SECTIONS
+         ════════════════════════════════════════════════ -->
+      <!-- Hero -->
+      <section class="lp-hero">
+         <div class="lp-hero-inner">
+            <div class="lp-badge">ML-Powered · XGBoost · R² = 0.864</div>
+            <h1 class="lp-title">
+               Predict Your Medical<br>
+               <span class="lp-accent">Insurance Cost</span><br>
+               Instantly
+            </h1>
+            <p class="lp-sub">
+               Enter your health and demographic details below to get an instant estimate
+               of your annual medical insurance charges — powered by a tuned XGBoost model
+               trained on real insurance data.
+            </p>
+            <a href="#predict-form" class="lp-btn">Get Your Estimate ↓</a>
+         </div>
+         <div class="lp-cards">
+            <div class="lp-stat">
+               <div class="lp-stat-val">0.864</div>
+               <div class="lp-stat-label">R² Score</div>
+            </div>
+            <div class="lp-stat">
+               <div class="lp-stat-val">1,338</div>
+               <div class="lp-stat-label">Training Records</div>
+            </div>
+            <div class="lp-stat">
+               <div class="lp-stat-val">6</div>
+               <div class="lp-stat-label">Features Used</div>
+            </div>
+         </div>
+      </section>
+      <!-- Features -->
+      <section class="lp-section lp-white">
+         <div class="lp-inner">
+            <div class="lp-tag">How It Works</div>
+            <h2 class="lp-heading">What Affects Your Insurance Cost?</h2>
+            <p class="lp-desc">
+               The model considers six key factors that collectively explain 86.4%
+               of the variation in insurance charges.
+            </p>
+            <div class="lp-feature-grid">
+               <div class="lp-feature">
+                  <div class="lp-fi">🎂</div>
+                  <h3>Age</h3>
+                  <p>Older individuals typically incur higher medical costs due to increased health risks</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">🚬</div>
+                  <h3>Smoking Status</h3>
+                  <p>The single most influential feature — smokers pay significantly more in insurance charges</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">⚖️</div>
+                  <h3>BMI</h3>
+                  <p>Higher BMI is associated with greater health risks and higher insurance premiums</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">👶</div>
+                  <h3>Children</h3>
+                  <p>Number of dependents covered under the insurance plan</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">⚥</div>
+                  <h3>Sex</h3>
+                  <p>Gender plays a small but measurable role in insurance cost estimation</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">📍</div>
+                  <h3>Region</h3>
+                  <p>Geographic location affects pricing across Southwest, Southeast, Northwest, Northeast</p>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- Model Comparison -->
+      <section class="lp-section lp-light">
+         <div class="lp-inner">
+            <div class="lp-tag">Model Performance</div>
+            <h2 class="lp-heading">Why XGBoost?</h2>
+            <p class="lp-desc">
+               Six models were trained and compared. Tuned XGBoost delivered the best R²
+               and lowest errors, outperforming all including tuned Random Forest.
+            </p>
+            <div class="lp-table-wrap">
+               <table class="lp-table">
+                  <thead>
+                     <tr>
+                        <th>Model</th>
+                        <th>RMSE</th>
+                        <th>MAE</th>
+                        <th>R²</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr class="lp-best">
+                        <td><strong>✅ XGBoost (Tuned)</strong></td>
+                        <td><strong>$4,721</strong></td>
+                        <td><strong>$2,614</strong></td>
+                        <td><strong>0.8639</strong></td>
+                     </tr>
+                     <tr>
+                        <td>Random Forest (Tuned)</td>
+                        <td>$4,891</td>
+                        <td>$2,703</td>
+                        <td>0.8489</td>
+                     </tr>
+                     <tr>
+                        <td>Random Forest (Default)</td>
+                        <td>$4,948</td>
+                        <td>$2,795</td>
+                        <td>0.8370</td>
+                     </tr>
+                     <tr>
+                        <td>XGBoost (Default)</td>
+                        <td>$5,279</td>
+                        <td>$3,105</td>
+                        <td>0.8144</td>
+                     </tr>
+                     <tr>
+                        <td>Linear Regression</td>
+                        <td>$6,192</td>
+                        <td>$4,267</td>
+                        <td>0.7447</td>
+                     </tr>
+                     <tr>
+                        <td>Decision Tree</td>
+                        <td>$6,871</td>
+                        <td>$3,368</td>
+                        <td>0.6857</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </section>
+      <!-- Risk Levels -->
+      <section class="lp-section lp-white">
+         <div class="lp-inner">
+            <div class="lp-tag">Risk Classification</div>
+            <h2 class="lp-heading">How Costs Are Classified</h2>
+            <p class="lp-desc">Every prediction is accompanied by a risk level based on the estimated annual charge.</p>
+            <div class="lp-risk-grid">
+               <div class="lp-risk lp-risk-low">
+                  <div class="lp-risk-name">Low</div>
+                  <div class="lp-risk-range">Under $12,000</div>
+                  <div class="lp-risk-note">Younger, non-smoker, healthy BMI</div>
+               </div>
+               <div class="lp-risk lp-risk-medium">
+                  <div class="lp-risk-name">Medium</div>
+                  <div class="lp-risk-range">$12,000 – $25,000</div>
+                  <div class="lp-risk-note">Moderate age or BMI, non-smoker</div>
+               </div>
+               <div class="lp-risk lp-risk-high">
+                  <div class="lp-risk-name">High</div>
+                  <div class="lp-risk-range">$25,000 – $40,000</div>
+                  <div class="lp-risk-note">Smoker or high BMI with age factors</div>
+               </div>
+               <div class="lp-risk lp-risk-very-high">
+                  <div class="lp-risk-name">Very High</div>
+                  <div class="lp-risk-range">Above $40,000</div>
+                  <div class="lp-risk-note">Smoker, high BMI, typically older</div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- ═══════════════════════════════════════════════
+         PREDICT FORM (original, unchanged)
+         ════════════════════════════════════════════════ -->
+      <div class="container" id="predict-form">
+         <div class="form-card">
+            <h2 class="form-title">Patient Details</h2>
+            <form id="insuranceForm">
+               <div class="form-grid">
+                  <div class="form-group">
+                     <label for="age">Age</label>
+                     <input type="number" id="age" placeholder="e.g. 31" min="1" max="100" required>
+                  </div>
+                  <div class="form-group">
+                     <label for="sex">Sex</label>
+                     <select id="sex" required>
+                        <option value="">Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                     </select>
+                  </div>
+                  <div class="form-group">
+                     <label for="bmi">BMI</label>
+                     <input type="number" id="bmi" placeholder="e.g. 25.74" step="0.01" min="10" max="60" required>
+                  </div>
+                  <div class="form-group">
+                     <label for="children">Number of Children</label>
+                     <input type="number" id="children" placeholder="e.g. 0" min="0" max="10" required>
+                  </div>
+                  <div class="form-group">
+                     <label for="smoker">Smoker</label>
+                     <select id="smoker" required>
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                     </select>
+                  </div>
+                  <div class="form-group">
+                     <label for="region">Region</label>
+                     <select id="region" required>
+                        <option value="">Select</option>
+                        <option value="southwest">Southwest</option>
+                        <option value="southeast">Southeast</option>
+                        <option value="northwest">Northwest</option>
+                        <option value="northeast">Northeast</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="loading" id="loading">Predicting...</div>
+               <button type="submit" class="btn-predict">Predict Insurance Cost</button>
+            </form>
+         </div>
+         <!-- Result Modal -->
+         <div id="resultModal" class="modal">
+            <div class="modal-content">
+               <button class="close-btn">&times;</button>
+               <div id="modalResult"></div>
+            </div>
+         </div>
       </div>
-    </div>
-  </nav>
-
-  <!-- Hero -->
-  <div class="hero">
-    <h1>Insurance Cost Predictor</h1>
-    <p>Enter your details below to get an instant estimate of your medical insurance charges</p>
-  </div>
-
-  <!-- Form Card -->
-  <div class="container">
-    <div class="form-card">
-      <h2 class="form-title">Patient Details</h2>
-
-      <form id="insuranceForm">
-        <div class="form-grid">
-
-          <!-- Age -->
-          <div class="form-group">
-            <label for="age">Age</label>
-            <input type="number" id="age" placeholder="e.g. 31" min="1" max="100" required>
-          </div>
-
-          <!-- Sex -->
-          <div class="form-group">
-            <label for="sex">Sex</label>
-            <select id="sex" required>
-              <option value="">Select</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-
-          <!-- BMI -->
-          <div class="form-group">
-            <label for="bmi">BMI</label>
-            <input type="number" id="bmi" placeholder="e.g. 25.74" step="0.01" min="10" max="60" required>
-          </div>
-
-          <!-- Children -->
-          <div class="form-group">
-            <label for="children">Number of Children</label>
-            <input type="number" id="children" placeholder="e.g. 0" min="0" max="10" required>
-          </div>
-
-          <!-- Smoker -->
-          <div class="form-group">
-            <label for="smoker">Smoker</label>
-            <select id="smoker" required>
-              <option value="">Select</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
-          </div>
-
-          <!-- Region -->
-          <div class="form-group">
-            <label for="region">Region</label>
-            <select id="region" required>
-              <option value="">Select</option>
-              <option value="southwest">Southwest</option>
-              <option value="southeast">Southeast</option>
-              <option value="northwest">Northwest</option>
-              <option value="northeast">Northeast</option>
-            </select>
-          </div>
-
-        </div>
-
-        <div class="loading" id="loading">Predicting...</div>
-        <button type="submit" class="btn-predict">Predict Insurance Cost</button>
-      </form>
-    </div>
-
-    <!-- Result Modal -->
-    <div id="resultModal" class="modal">
-      <div class="modal-content">
-        <button class="close-btn">&times;</button>
-        <div id="modalResult"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-</body>
+      <!-- Footer -->
+      <footer class="lp-footer">
+         <div class="lp-footer-inner">
+            <span>🏥 InsurePredict — Medical Insurance Cost Predictor</span>
+            <span>Built with Flask · XGBoost · Supabase</span>
+         </div>
+      </footer>
+      <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+   </body>
 </html>

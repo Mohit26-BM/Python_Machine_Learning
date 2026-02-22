@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoanIQ — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dash-body">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">🏦 LoanIQ</a>
+      <div class="nav-links">
+        <a href="/predict" class="nav-pill">Predict</a>
+        <a href="/dashboard" class="nav-pill active">Dashboard</a>
+        <a href="/history" class="nav-pill">History</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-container">
+
+    <div class="dash-header">
+      <div>
+        <h1 class="dash-title">All-Time <span class="title-accent">Dashboard</span></h1>
+        <p class="dash-sub">Analytics across all loan predictions made</p>
+      </div>
+      <a href="/predict" class="btn-nav">New Prediction →</a>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#e8eef5;">📊</div>
+        <div>
+          <div class="kpi-value">{{ total }}</div>
+          <div class="kpi-label">Total Predictions</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#dcfce7;">✅</div>
+        <div>
+          <div class="kpi-value">{{ approved }}</div>
+          <div class="kpi-label">Approved</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#fee2e2;">❌</div>
+        <div>
+          <div class="kpi-value">{{ rejected }}</div>
+          <div class="kpi-label">Rejected</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#e0e7ff;">🎯</div>
+        <div>
+          <div class="kpi-value">{{ avg_conf }}%</div>
+          <div class="kpi-label">Avg Confidence</div>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon" style="background:#fef3c7;">💰</div>
+        <div>
+          <div class="kpi-value">₹{{ "{:,}".format(avg_income) }}</div>
+          <div class="kpi-label">Avg Applicant Income</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="chart-row">
+      <!-- Donut — Approval Rate -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Approval vs Rejection</h3>
+          <span class="ch-badge blue">Overall</span>
+        </div>
+        <div id="donutChart"></div>
+      </div>
+
+      <!-- Bar — Property Area -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Predictions by Property Area</h3>
+          <span class="ch-badge sky">Area</span>
+        </div>
+        <div id="areaChart"></div>
+      </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="chart-row">
+      <!-- Bar — Credit History vs Outcome -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Credit History vs Outcome</h3>
+          <span class="ch-badge lavender">Credit</span>
+        </div>
+        <div id="creditChart"></div>
+      </div>
+
+      <!-- Donut — Education -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Education Distribution</h3>
+          <span class="ch-badge sky">Education</span>
+        </div>
+        <div id="eduChart"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script>
+const approved      = JSON.parse('{{ approved | tojson | safe }}');
+const rejected      = JSON.parse('{{ rejected | tojson | safe }}');
+const areaCounts    = JSON.parse('{{ area_counts | tojson | safe }}');
+const eduCounts     = JSON.parse('{{ edu_counts | tojson | safe }}');
+const goodApproved  = JSON.parse('{{ good_credit_approved | tojson | safe }}');
+const goodRejected  = JSON.parse('{{ good_credit_rejected | tojson | safe }}');
+const badApproved   = JSON.parse('{{ bad_credit_approved | tojson | safe }}');
+const badRejected   = JSON.parse('{{ bad_credit_rejected | tojson | safe }}');
+
+    const fontFamily = "'DM Sans', sans-serif";
+
+    // ── Donut — Approval Rate ──────────────────────────────────────
+    new ApexCharts(document.getElementById("donutChart"), {
+      chart: { type: "donut", height: 280, fontFamily },
+      series: [approved, rejected],
+      labels: ["Approved", "Rejected"],
+      colors: ["#22c55e", "#ef4444"],
+      plotOptions: {
+        pie: {
+          donut: {
+            size: "65%",
+            labels: {
+              show: true,
+              total: {
+                show: true,
+                label: "Total",
+                fontSize: "13px",
+                fontWeight: 600,
+                color: "#2d3a52",
+              }
+            }
+          }
+        }
+      },
+      legend: { position: "bottom", fontFamily, fontSize: "13px" },
+      dataLabels: { style: { fontFamily } },
+    }).render();
+
+    // ── Bar — Property Area ────────────────────────────────────────
+    new ApexCharts(document.getElementById("areaChart"), {
+      chart: { type: "bar", height: 280, fontFamily, toolbar: { show: false } },
+      series: [{ name: "Predictions", data: Object.values(areaCounts) }],
+      xaxis: { categories: Object.keys(areaCounts), labels: { style: { fontFamily } } },
+      colors: ["#a0d8e6"],
+      plotOptions: { bar: { borderRadius: 6, columnWidth: "45%" } },
+      dataLabels: { enabled: false },
+      grid: { borderColor: "#dde4f0" },
+      yaxis: { labels: { style: { fontFamily } } },
+    }).render();
+
+    // ── Grouped Bar — Credit History vs Outcome ────────────────────
+    new ApexCharts(document.getElementById("creditChart"), {
+      chart: { type: "bar", height: 280, fontFamily, toolbar: { show: false } },
+      series: [
+        { name: "Approved", data: [goodApproved, badApproved] },
+        { name: "Rejected", data: [goodRejected, badRejected] },
+      ],
+      xaxis: {
+        categories: ["Good Credit", "Bad Credit"],
+        labels: { style: { fontFamily } }
+      },
+      colors: ["#22c55e", "#ef4444"],
+      plotOptions: { bar: { borderRadius: 4, columnWidth: "50%", grouped: true } },
+      dataLabels: { enabled: false },
+      legend: { position: "top", fontFamily, fontSize: "13px" },
+      grid: { borderColor: "#dde4f0" },
+      yaxis: { labels: { style: { fontFamily } } },
+    }).render();
+
+    // ── Donut — Education ──────────────────────────────────────────
+    new ApexCharts(document.getElementById("eduChart"), {
+      chart: { type: "donut", height: 280, fontFamily },
+      series: Object.values(eduCounts),
+      labels: Object.keys(eduCounts),
+      colors: ["#8e9ed8", "#a0d8e6"],
+      plotOptions: {
+        pie: {
+          donut: {
+            size: "65%",
+            labels: {
+              show: true,
+              total: {
+                show: true,
+                label: "Total",
+                fontSize: "13px",
+                fontWeight: 600,
+                color: "#2d3a52",
+              }
+            }
+          }
+        }
+      },
+      legend: { position: "bottom", fontFamily, fontSize: "13px" },
+      dataLabels: { style: { fontFamily } },
+    }).render();
+  </script>
+
+</body>
+</html>

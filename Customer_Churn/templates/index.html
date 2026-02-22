@@ -3,182 +3,356 @@
    <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Customer Churn Prediction</title>
+      <title>ChurnGuard — Customer Churn Prediction</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
    </head>
    <body>
-      <div class="container">
-         <h1>Customer Churn Prediction</h1>
-         <p class="subtitle">Enter customer details to predict churn probability</p>
-         <nav class="top-nav">
-            <a href="/history">History</a>
-            <a href="/dashboard">Summary</a>
-         </nav>
-         <div class="layout">
-            <div class="form-wrapper">
-               <form id="churnForm" class="form-grid">
-                  <div class="form-group">
-                     <label for="gender">Gender</label>
-                     <select id="gender" required>
-                        <option value="">Select</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="SeniorCitizen">Senior Citizen</label>
-                     <select id="SeniorCitizen" required>
-                        <option value="0">No</option>
-                        <option value="1">Yes</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="Partner">Partner</label>
-                     <select id="Partner" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="Dependents">Dependents</label>
-                     <select id="Dependents" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="tenure">Tenure (months)</label>
-                     <input type="number" id="tenure" min="0" max="72" required>
-                  </div>
-                  <div class="form-group">
-                     <label for="PhoneService">Phone Service</label>
-                     <select id="PhoneService" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="MultipleLines">Multiple Lines</label>
-                     <select id="MultipleLines" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="No phone service">No phone service</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="InternetService">Internet Service</label>
-                     <select id="InternetService" required>
-                        <option value="">Select</option>
-                        <option value="DSL">DSL</option>
-                        <option value="Fiber optic">Fiber optic</option>
-                        <option value="No">No</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="OnlineSecurity">Online Security</label>
-                     <select id="OnlineSecurity" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="No internet service">No internet service</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="OnlineBackup">Online Backup</label>
-                     <select id="OnlineBackup" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="No internet service">No internet service</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="DeviceProtection">Device Protection</label>
-                     <select id="DeviceProtection" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="No internet service">No internet service</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="TechSupport">Tech Support</label>
-                     <select id="TechSupport" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="No internet service">No internet service</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="StreamingTV">Streaming TV</label>
-                     <select id="StreamingTV" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="No internet service">No internet service</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="StreamingMovies">Streaming Movies</label>
-                     <select id="StreamingMovies" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                        <option value="No internet service">No internet service</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="Contract">Contract</label>
-                     <select id="Contract" required>
-                        <option value="">Select</option>
-                        <option value="Month-to-month">Month-to-month</option>
-                        <option value="One year">One year</option>
-                        <option value="Two year">Two year</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="PaperlessBilling">Paperless Billing</label>
-                     <select id="PaperlessBilling" required>
-                        <option value="">Select</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="PaymentMethod">Payment Method</label>
-                     <select id="PaymentMethod" required>
-                        <option value="">Select</option>
-                        <option value="Electronic check">Electronic check</option>
-                        <option value="Mailed check">Mailed check</option>
-                        <option value="Bank transfer (automatic)">Bank transfer (automatic)</option>
-                        <option value="Credit card (automatic)">Credit card (automatic)</option>
-                     </select>
-                  </div>
-                  <div class="form-group">
-                     <label for="MonthlyCharges">Monthly Charges ($)</label>
-                     <input type="number" id="MonthlyCharges" step="0.01" min="0" required>
-                  </div>
-                  <div class="form-group">
-                     <label for="TotalCharges">Total Charges ($)</label>
-                     <input type="number" id="TotalCharges" step="0.01" min="0" required>
-                  </div>
-                  <div class="form-group full-width">
-                     <button type="submit">Predict Churn</button>
-                  </div>
-               </form>
+      <!-- ═══════════════════════════════════════════════
+         LANDING SECTIONS
+         ════════════════════════════════════════════════ -->
+      <!-- Hero -->
+      <nav class="lp-nav">
+         <div class="lp-nav-inner">
+            <span class="lp-nav-brand">📉 ChurnGuard</span>
+            <div class="lp-nav-links">
+               <a href="/history" class="lp-nav-link">History</a>
+               <a href="/dashboard" class="lp-nav-link">Summary</a>
             </div>
-            <div class="result-wrapper">
-               <div class="loading">
-                  <div class="spinner"></div>
-                  <p>Analyzing customer data...</p>
+         </div>
+      </nav>
+      <section class="lp-hero">
+         <div class="lp-hero-inner">
+            <div class="lp-badge">ML-Powered · XGBoost · 78.2% Accuracy</div>
+            <h1 class="lp-title">
+               Predict Customer<br>
+               <span class="lp-accent">Churn Risk</span><br>
+               Before It Happens
+            </h1>
+            <p class="lp-sub">
+               Enter customer account and service details to instantly predict
+               whether a customer is likely to churn — powered by an XGBoost
+               classifier trained on real telecom data.
+            </p>
+            <a href="#predict-form" class="lp-btn">Check Churn Risk ↓</a>
+         </div>
+         <div class="lp-cards">
+            <div class="lp-stat">
+               <div class="lp-stat-val">78.2%</div>
+               <div class="lp-stat-label">Accuracy</div>
+            </div>
+            <div class="lp-stat">
+               <div class="lp-stat-val">7,043</div>
+               <div class="lp-stat-label">Training Records</div>
+            </div>
+            <div class="lp-stat">
+               <div class="lp-stat-val">19</div>
+               <div class="lp-stat-label">Features Used</div>
+            </div>
+         </div>
+      </section>
+      <!-- Features -->
+      <section class="lp-section lp-white">
+         <div class="lp-inner">
+            <div class="lp-tag">How It Works</div>
+            <h2 class="lp-heading">What Drives Customer Churn?</h2>
+            <p class="lp-desc">
+               The model analyses 19 customer attributes across account info,
+               service subscriptions, and billing to estimate churn probability.
+            </p>
+            <div class="lp-feature-grid">
+               <div class="lp-feature">
+                  <div class="lp-fi">📋</div>
+                  <h3>Account Details</h3>
+                  <p>Tenure, contract type, and billing method — longer contracts strongly reduce churn likelihood</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">📡</div>
+                  <h3>Internet Services</h3>
+                  <p>Fiber optic customers churn more frequently — security and backup services help retention</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">📞</div>
+                  <h3>Phone Services</h3>
+                  <p>Phone service and multiple lines subscription patterns affect churn probability</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">💳</div>
+                  <h3>Billing</h3>
+                  <p>Monthly and total charges, paperless billing, and payment method all carry predictive weight</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">👤</div>
+                  <h3>Demographics</h3>
+                  <p>Senior citizen status, partner, and dependents influence churn risk significantly</p>
+               </div>
+               <div class="lp-feature">
+                  <div class="lp-fi">🎬</div>
+                  <h3>Add-on Services</h3>
+                  <p>Streaming TV, movies, tech support, and device protection usage patterns</p>
                </div>
             </div>
          </div>
+      </section>
+      <!-- Model Comparison -->
+      <section class="lp-section lp-light">
+         <div class="lp-inner">
+            <div class="lp-tag">Model Performance</div>
+            <h2 class="lp-heading">Why XGBoost?</h2>
+            <p class="lp-desc">
+               Five models were trained and compared with class-balanced training.
+               XGBoost (Default) delivered the best overall accuracy and F1 score.
+            </p>
+            <div class="lp-table-wrap">
+               <table class="lp-table">
+                  <thead>
+                     <tr>
+                        <th>Model</th>
+                        <th>Accuracy</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>Notes</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr class="lp-best">
+                        <td><strong>✅ XGBoost (Default)</strong></td>
+                        <td><strong>78.2%</strong></td>
+                        <td><strong>0.61</strong></td>
+                        <td><strong>0.60</strong></td>
+                        <td><strong>Best overall</strong></td>
+                     </tr>
+                     <tr>
+                        <td>XGBoost (Tuned)</td>
+                        <td>78.1%</td>
+                        <td>0.57</td>
+                        <td>0.58</td>
+                        <td>Slight drop vs default</td>
+                     </tr>
+                     <tr>
+                        <td>Decision Tree</td>
+                        <td>78.1%</td>
+                        <td>~0.57</td>
+                        <td>~0.57</td>
+                        <td>Weakest ensemble</td>
+                     </tr>
+                     <tr>
+                        <td>RF (Tuned)</td>
+                        <td>77.9%</td>
+                        <td>0.61</td>
+                        <td>0.59</td>
+                        <td>Slight improvement</td>
+                     </tr>
+                     <tr>
+                        <td>RF (Default)</td>
+                        <td>77.7%</td>
+                        <td>0.58</td>
+                        <td>0.58</td>
+                        <td>Good baseline</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </section>
+      <!-- Risk Levels -->
+      <section class="lp-section lp-white">
+         <div class="lp-inner">
+            <div class="lp-tag">Risk Classification</div>
+            <h2 class="lp-heading">Churn Risk Levels</h2>
+            <p class="lp-desc">Every prediction includes a churn probability and risk classification to guide retention efforts.</p>
+            <div class="lp-risk-grid">
+               <div class="lp-risk lp-risk-low">
+                  <div class="lp-risk-name">Low Risk</div>
+                  <div class="lp-risk-range">0% – 30%</div>
+                  <div class="lp-risk-note">Long tenure, annual contract, low monthly charges</div>
+               </div>
+               <div class="lp-risk lp-risk-medium">
+                  <div class="lp-risk-name">Medium Risk</div>
+                  <div class="lp-risk-range">30% – 60%</div>
+                  <div class="lp-risk-note">Month-to-month contract, moderate charges</div>
+               </div>
+               <div class="lp-risk lp-risk-high">
+                  <div class="lp-risk-name">High Risk</div>
+                  <div class="lp-risk-range">60% – 80%</div>
+                  <div class="lp-risk-note">New customer, fiber optic, no add-on services</div>
+               </div>
+               <div class="lp-risk lp-risk-very-high">
+                  <div class="lp-risk-name">Very High Risk</div>
+                  <div class="lp-risk-range">Above 80%</div>
+                  <div class="lp-risk-note">Electronic check, no security, month-to-month</div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- ═══════════════════════════════════════════════
+         ORIGINAL PREDICT FORM — unchanged
+         ════════════════════════════════════════════════ -->
+      <div class="container" id="predict-form">
+         <p class="subtitle">Enter customer details to predict churn probability</p>
+         <form id="churnForm" class="form-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="form-group">
+               <label for="gender">Gender</label>
+               <select id="gender" required>
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="SeniorCitizen">Senior Citizen</label>
+               <select id="SeniorCitizen" required>
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="Partner">Partner</label>
+               <select id="Partner" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="Dependents">Dependents</label>
+               <select id="Dependents" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="tenure">Tenure (months)</label>
+               <input type="number" id="tenure" min="0" max="72" required>
+            </div>
+            <div class="form-group">
+               <label for="PhoneService">Phone Service</label>
+               <select id="PhoneService" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="MultipleLines">Multiple Lines</label>
+               <select id="MultipleLines" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="No phone service">No phone service</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="InternetService">Internet Service</label>
+               <select id="InternetService" required>
+                  <option value="">Select</option>
+                  <option value="DSL">DSL</option>
+                  <option value="Fiber optic">Fiber optic</option>
+                  <option value="No">No</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="OnlineSecurity">Online Security</label>
+               <select id="OnlineSecurity" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="No internet service">No internet service</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="OnlineBackup">Online Backup</label>
+               <select id="OnlineBackup" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="No internet service">No internet service</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="DeviceProtection">Device Protection</label>
+               <select id="DeviceProtection" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="No internet service">No internet service</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="TechSupport">Tech Support</label>
+               <select id="TechSupport" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="No internet service">No internet service</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="StreamingTV">Streaming TV</label>
+               <select id="StreamingTV" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="No internet service">No internet service</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="StreamingMovies">Streaming Movies</label>
+               <select id="StreamingMovies" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                  <option value="No internet service">No internet service</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="Contract">Contract</label>
+               <select id="Contract" required>
+                  <option value="">Select</option>
+                  <option value="Month-to-month">Month-to-month</option>
+                  <option value="One year">One year</option>
+                  <option value="Two year">Two year</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="PaperlessBilling">Paperless Billing</label>
+               <select id="PaperlessBilling" required>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="PaymentMethod">Payment Method</label>
+               <select id="PaymentMethod" required>
+                  <option value="">Select</option>
+                  <option value="Electronic check">Electronic check</option>
+                  <option value="Mailed check">Mailed check</option>
+                  <option value="Bank transfer (automatic)">Bank transfer (automatic)</option>
+                  <option value="Credit card (automatic)">Credit card (automatic)</option>
+               </select>
+            </div>
+            <div class="form-group">
+               <label for="MonthlyCharges">Monthly Charges ($)</label>
+               <input type="number" id="MonthlyCharges" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+               <label for="TotalCharges">Total Charges ($)</label>
+               <input type="number" id="TotalCharges" step="0.01" min="0" required>
+            </div>
+            <div class="form-group full-width">
+               <button type="submit">Predict Churn</button>
+            </div>
+         </form>
+      </div>
+      <div class="result-wrapper">
+         <div class="loading">
+            <div class="spinner"></div>
+            <p>Analyzing customer data...</p>
+         </div>
+      </div>
+      </div>
       </div>
       <div id="resultModal" class="modal">
          <div class="modal-content">

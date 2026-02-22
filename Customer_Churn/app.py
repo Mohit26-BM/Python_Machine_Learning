@@ -154,8 +154,6 @@ def history():
 @app.route("/dashboard")
 def dashboard():
     try:
-        # Fetch today's predictions
-        today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         response = (
             supabase.table("churn_predictions")
             .select("churn_probability, risk_level")
@@ -194,4 +192,5 @@ def dashboard():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 

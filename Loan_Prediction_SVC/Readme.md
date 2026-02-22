@@ -6,7 +6,7 @@ This project predicts **loan approval status** using machine learning classifica
 
 The full pipeline covers exploratory data analysis, data cleaning, feature engineering, model training with class balancing, multi-model comparison, and deployment as a live Flask web application backed by a persistent cloud database.
 
-🔗 **Live Demo:** [LoanIQ — Loan Approval Predictor](#) *(add your Render URL here)*
+🔗 **Live Demo:** [LoanIQ — Loan Approval Predictor](https://loan-approval-1-2wn7.onrender.com/)
 
 ---
 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoanIQ — History</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dash-body">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-brand">🏦 LoanIQ</a>
+      <div class="nav-links">
+        <a href="/predict" class="nav-pill">Predict</a>
+        <a href="/dashboard" class="nav-pill">Dashboard</a>
+        <a href="/history" class="nav-pill active">History</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-container">
+
+    <div class="dash-header">
+      <div>
+        <h1 class="dash-title">Prediction <span class="title-accent">History</span></h1>
+        <p class="dash-sub">Last 30 predictions made</p>
+      </div>
+      <a href="/predict" class="btn-nav">New Prediction →</a>
+    </div>
+
+    <div class="history-card">
+      {% if rows %}
+      <div class="table-scroll">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Gender</th>
+              <th>Married</th>
+              <th>Dependents</th>
+              <th>Education</th>
+              <th>Self Employed</th>
+              <th>App. Income</th>
+              <th>Co-app. Income</th>
+              <th>Loan Amount</th>
+              <th>Loan Term</th>
+              <th>Credit</th>
+              <th>Property Area</th>
+              <th>Result</th>
+              <th>Confidence</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+            <tr>
+              <td>{{ row.gender }}</td>
+              <td>{{ row.married }}</td>
+              <td>{{ row.dependents }}</td>
+              <td>{{ row.education }}</td>
+              <td>{{ row.self_employed }}</td>
+              <td>₹{{ "{:,.0f}".format(row.applicant_income) }}</td>
+              <td>₹{{ "{:,.0f}".format(row.coapplicant_income) }}</td>
+              <td>{{ row.loan_amount }}k</td>
+              <td>{{ row.loan_term | int }} mo</td>
+              <td>
+                <span class="credit-badge {% if row.credit_history == 1.0 %}credit-good{% else %}credit-bad{% endif %}">
+                  {% if row.credit_history == 1.0 %}Good{% else %}Bad{% endif %}
+                </span>
+              </td>
+              <td>{{ row.property_area }}</td>
+              <td>
+                <span class="result-badge {% if row.prediction == 'Approved' %}badge-approved{% else %}badge-rejected{% endif %}">
+                  {{ row.prediction }}
+                </span>
+              </td>
+              <td>{{ row.confidence }}%</td>
+              <td class="timestamp">{{ row.created_at[:16].replace('T', ' ') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p>No predictions yet. <a href="/predict">Make your first prediction →</a></p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+
+</body>
+</html>

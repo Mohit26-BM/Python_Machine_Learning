@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LoanIQ — Smart Loan Approval Prediction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <span class="nav-brand">🏦 LoanIQ</span>
+      <div class="nav-links">
+  <a href="/predict" class="nav-pill">Predict</a>
+  <a href="/dashboard" class="nav-pill">Dashboard</a>
+  <a href="/history" class="nav-pill">History</a>
+</div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">ML-Powered · Logistic Regression · 85.42% Accuracy</div>
+      <h1 class="hero-title">
+        Know Your Loan<br>
+        <span class="hero-accent">Approval Chances</span><br>
+        Instantly
+      </h1>
+      <p class="hero-sub">
+        Enter your financial details and get an instant prediction on whether
+        your loan application is likely to be approved or rejected — powered
+        by a machine learning model trained on real loan data.
+      </p>
+      <a href="/predict" class="btn-primary">Start Prediction →</a>
+    </div>
+
+    <!-- Floating stat cards -->
+    <div class="hero-cards">
+      <div class="stat-card">
+        <div class="stat-value">85.42%</div>
+        <div class="stat-label">Model Accuracy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">614</div>
+        <div class="stat-label">Training Records</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">11</div>
+        <div class="stat-label">Features Used</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Model -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-tag">About the Model</div>
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-desc">
+        The model was trained on historical loan application data, learning patterns
+        from demographic and financial features to predict loan approval outcomes.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">👤</div>
+          <h3>Demographics</h3>
+          <p>Gender, marital status, dependents, and education level are factored in</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💰</div>
+          <h3>Financial Profile</h3>
+          <p>Applicant income, co-applicant income, loan amount and repayment term</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <h3>Credit History</h3>
+          <p>Credit history is the single most influential factor in approval decisions</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🏘️</div>
+          <h3>Property Area</h3>
+          <p>Urban, semi-urban, and rural locations each carry different risk profiles</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Performance Metrics -->
+  <section class="section metrics-section">
+    <div class="section-inner">
+      <div class="section-tag">Performance</div>
+      <h2 class="section-title">Model Comparison</h2>
+      <p class="section-desc">
+        Logistic Regression was selected after comparing four models with class-balanced training.
+      </p>
+
+      <div class="metrics-table-wrapper">
+        <table class="metrics-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Accuracy</th>
+              <th>Precision</th>
+              <th>Recall</th>
+              <th>F1 Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="best-row">
+              <td><span class="model-badge">✅ Logistic Regression</span></td>
+              <td><strong>85.42%</strong></td>
+              <td>0.8522</td>
+              <td>0.8542</td>
+              <td>0.8527</td>
+            </tr>
+            <tr>
+              <td>Random Forest</td>
+              <td>83.33%</td>
+              <td>0.8317</td>
+              <td>0.8333</td>
+              <td>0.8253</td>
+            </tr>
+            <tr>
+              <td>SVC</td>
+              <td>81.25%</td>
+              <td>0.8073</td>
+              <td>0.8125</td>
+              <td>0.8062</td>
+            </tr>
+            <tr>
+              <td>Decision Tree</td>
+              <td>77.08%</td>
+              <td>0.7615</td>
+              <td>0.7708</td>
+              <td>0.7560</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Confusion Matrix -->
+      <div class="confusion-wrapper">
+        <h3 class="confusion-title">Confusion Matrix — Logistic Regression</h3>
+        <div class="confusion-grid">
+          <div class="cm-label-top"></div>
+          <div class="cm-header">Predicted Rejected</div>
+          <div class="cm-header">Predicted Approved</div>
+
+          <div class="cm-label">Actual Rejected</div>
+          <div class="cm-cell tp">11<span>True Negative</span></div>
+          <div class="cm-cell fp">4<span>False Positive</span></div>
+
+          <div class="cm-label">Actual Approved</div>
+          <div class="cm-cell fn">3<span>False Negative</span></div>
+          <div class="cm-cell tn">30<span>True Positive</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2>Ready to check your eligibility?</h2>
+      <p>Fill in your details and get an instant prediction with confidence score</p>
+      <a href="/predict" class="btn-primary btn-large">Start Prediction →</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>🏦 LoanIQ — ML Loan Prediction</span>
+      <span>Built with Flask · Scikit-learn · Supabase</span>
+    </div>
+  </footer>
+
+</body>
+</html>

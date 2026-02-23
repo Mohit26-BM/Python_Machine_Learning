@@ -1,51 +1,125 @@
-import streamlit as st
+from flask import Flask, render_template, request
+import joblib
 import pandas as pd
-import joblib
+from supabase import create_client
+from flask import Flask, render_template, request, jsonify
+from dotenv import load_dotenv
+import os
 
-import joblib
+load_dotenv()
 
-# Load all models at once
-models = joblib.load("best_models.pkl")
+app = Flask(__name__)
 
-rf_model = models["RandomForest"]
-dt_model = models["DecisionTree"]
-xgb_model = models["XGBoost"]
+# Load trained model
+model = joblib.load("rainfall_model.pkl")
+
+# Init Supabase client
+supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
 
-st.title("Rainfall Prediction App 🌧️")
+@app.route("/")
+def home():
+    return render_template("home.html")
 
-# Sidebar inputs
-st.sidebar.header("Input Weather Data")
-pressure = st.sidebar.number_input("Pressure", value=1015.9)
-dewpoint = st.sidebar.number_input("Dew Point", value=19.9)
-humidity = st.sidebar.number_input("Humidity", value=95)
-cloud = st.sidebar.number_input("Cloud Cover", value=81)
-sunshine = st.sidebar.number_input("Sunshine", value=40.0)
-winddirection = st.sidebar.number_input("Wind Direction", value=13)
-windspeed = st.sidebar.number_input("Wind Speed", value=7)
 
-# Create input dataframe
-input_df = pd.DataFrame(
-    [[pressure, dewpoint, humidity, cloud, sunshine, winddirection, windspeed]],
-    columns=['pressure', 'dewpoint', 'humidity', 'cloud', 'sunshine',
-             'winddirection', 'windspeed']
-)
+@app.route("/predict")
+def predict_page():
+    return render_template("predict.html")
 
-# Model selection
-model_choice = st.selectbox("Select Model", ["Random Forest", "Decision Tree", "XGBoost"])
 
-# Predict button
-if st.button("Predict"):
-    if model_choice == "Random Forest":
-        model = rf_model
-    elif model_choice == "Decision Tree":
-        model = dt_model
-    else:
-        model = xgb_model
+@app.route("/result", methods=["POST"])
+def result():
+    try:
+        input_data = [
+            float(request.form["pressure"]),
+            float(request.form["dewpoint"]),
+            float(request.form["humidity"]),
+            float(request.form["cloud"]),
+            float(request.form["sunshine"]),
+            float(request.form["winddirection"]),
+            float(request.form["windspeed"]),
+        ]
 
-    prediction = model.predict(input_df)[0]
-    probability = model.predict_proba(input_df)[0]
+        input_df = pd.DataFrame(
+            [input_data],
+            columns=[
+                "pressure",
+                "dewpoint",
+                "humidity",
+                "cloud",
+                "sunshine",
+                "winddirection",
+                "windspeed",
+            ],
+        )
 
-    st.write(f"**Prediction:** {'Rainfall' if prediction==1 else 'No Rainfall'}")
-    st.write(f"**Probability of No Rainfall:** {probability[0]*100:.2f}%")
-    st.write(f"**Probability of Rainfall:** {probability[1]*100:.2f}%")
+        prediction = model.predict(input_df)[0]
+        probability = model.predict_proba(input_df)[0][1]
+        result_text = "Rainfall Expected" if prediction == 1 else "No Rainfall Expected"
+
+        # Store in Supabase
+        supabase.table("rain_predictions").insert(
+            {
+                "pressure": input_data[0],
+                "dewpoint": input_data[1],
+                "humidity": input_data[2],
+                "cloud": input_data[3],
+                "sunshine": input_data[4],
+                "winddirection": input_data[5],
+                "windspeed": input_data[6],
+                "prediction": result_text,
+                "probability": round(probability * 100, 2),
+            }
+        ).execute()
+
+        return render_template(
+            "result.html",
+            prediction=result_text,
+            probability=round(probability * 100, 2),
+        )
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return "Error processing input."
+
+
+@app.route("/whatif")
+def whatif_page():
+    return render_template("whatif.html")
+
+
+@app.route("/api/predict", methods=["POST"])
+def api_predict():
+    try:
+        data = request.get_json()
+        input_df = pd.DataFrame(
+            [
+                {
+                    "pressure": float(data["pressure"]),
+                    "dewpoint": float(data["dewpoint"]),
+                    "humidity": float(data["humidity"]),
+                    "cloud": float(data["cloud"]),
+                    "sunshine": float(data["sunshine"]),
+                    "winddirection": float(data["winddirection"]),
+                    "windspeed": float(data["windspeed"]),
+                }
+            ]
+        )
+
+        prediction = model.predict(input_df)[0]
+        probability = model.predict_proba(input_df)[0][1]
+
+        return jsonify(
+            {
+                "prediction": (
+                    "Rainfall Expected" if prediction == 1 else "No Rainfall Expected"
+                ),
+                "probability": round(probability * 100, 2),
+            }
+        )
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -5,6 +5,7 @@ A machine learning web application that predicts the likelihood of rainfall from
 ## Live Demo
 [RainCast Rainfall Prediction](https://raincast-rainfall-predictor.onrender.com)
 
+
 ## System Overview
 
 The system implements:
@@ -253,4 +254,5 @@ SUPABASE_KEY=your-service-role-key
 * Web application built
 * Supabase integration complete
 * Deployed to Render
+
 

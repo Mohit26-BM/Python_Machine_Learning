@@ -3,10 +3,10 @@ import joblib
 import pandas as pd
 from supabase import create_client
 from flask import Flask, render_template, request, jsonify
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 import os
 
-load_dotenv()
+#load_dotenv()
 
 app = Flask(__name__)
 
@@ -122,4 +122,5 @@ def api_predict():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
+

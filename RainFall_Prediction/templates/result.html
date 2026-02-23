@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Result — RainCast</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">Rain<span>Cast</span></a>
+  <div class="nav-links">
+    <a href="/">Overview</a>
+    <a href="/predict">Predict</a>
+    <a href="/whatif">What-If</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="result-wrapper">
+
+    {% set is_rain = prediction == "Rainfall Expected" %}
+
+    <!-- Icon: SVG rain cloud or sun -->
+    <div class="result-icon-wrap {{ 'rain' if is_rain else 'no-rain' }}">
+      {% if is_rain %}
+        <!-- Rain cloud SVG -->
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+             stroke="rgba(0,180,255,0.9)" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/>
+          <line x1="8" y1="19" x2="8" y2="21"/>
+          <line x1="8" y1="13" x2="8" y2="15"/>
+          <line x1="12" y1="15" x2="12" y2="17"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="16" y1="13" x2="16" y2="15"/>
+          <line x1="16" y1="19" x2="16" y2="21"/>
+        </svg>
+      {% else %}
+        <!-- Sun SVG -->
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+             stroke="rgba(255,190,60,0.9)" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1"  x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22"  x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1"  y1="12" x2="3"  y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      {% endif %}
+    </div>
+
+    <div class="result-card">
+      <div class="result-label">Prediction Result</div>
+      <div class="result-title {{ 'rain' if is_rain else 'no-rain' }}">{{ prediction }}</div>
+
+      <!-- Animated SVG Ring -->
+      <div class="prob-ring-wrap">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle class="prob-ring-bg" cx="70" cy="70" r="58"/>
+          <circle
+            class="prob-ring-fill {{ 'rain' if is_rain else 'no-rain' }}"
+            cx="70" cy="70" r="58"
+            stroke-dasharray="364.4"
+            stroke-dashoffset="364.4"
+            id="ringCircle"
+          />
+        </svg>
+        <div class="prob-center">
+          <div class="prob-number">{{ probability }}</div>
+          <div class="prob-unit">%</div>
+        </div>
+      </div>
+
+      <div class="prob-label">Rainfall Probability</div>
+
+      <a href="/predict" class="cta-button" style="display:inline-flex; justify-content:center; text-decoration:none;">
+        Run Another Prediction
+      </a>
+
+      <br/>
+      <a href="/" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Overview
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const circle = document.getElementById('ringCircle');
+  const probability = JSON.parse('{{ probability | tojson | safe }}');
+  const circumference = 364.4;
+  const offset = circumference - (probability / 100) * circumference;
+
+  setTimeout(() => {
+    circle.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+    circle.style.strokeDashoffset = offset;
+  }, 200);
+</script>
+
+</body>
+</html>

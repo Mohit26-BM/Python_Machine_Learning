@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What-If Simulator — RainCast</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/whatif.css') }}" />
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">Rain<span>Cast</span></a>
+  <div class="nav-links">
+    <a href="/">Overview</a>
+    <a href="/predict">Predict</a>
+    <a href="/whatif" style="color:var(--cyan);">What-If</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div style="max-width:1100px; margin:0 auto; padding:48px 40px 0;">
+    <div class="hero-eyebrow">Interactive Simulator</div>
+    <h2 style="font-size:1.9rem; font-weight:700; letter-spacing:-0.02em; margin-bottom:8px;">
+      What-If <span class="accent">Simulator</span>
+    </h2>
+    <p style="color:var(--text-secondary); font-size:0.95rem; margin-bottom:0;">
+      Drag the sliders and watch the model respond in real time — no form submission needed.
+    </p>
+  </div>
+
+  <div class="whatif-wrapper">
+
+    <!-- ── LEFT: Sliders ── -->
+    <div>
+      <div class="preset-row">
+        <button class="preset-btn" data-preset="dry">Clear Day</button>
+        <button class="preset-btn" data-preset="rain">Heavy Rain</button>
+        <button class="preset-btn" data-preset="humid">Humid &amp; Overcast</button>
+        <button class="preset-btn" data-preset="avg">Average Day</button>
+      </div>
+
+      <div class="sliders-card">
+
+        <div class="form-section-title">Atmospheric</div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Pressure <span class="slider-unit">hPa</span></span>
+            <span class="slider-val" id="val-pressure">1013.0</span>
+          </div>
+          <input type="range" id="sl-pressure" min="990" max="1040" step="0.5" value="1013.0" title="Pressure in hPa" />
+          <div class="slider-range-labels"><span>990</span><span>1040</span></div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Dew Point <span class="slider-unit">°C</span></span>
+            <span class="slider-val" id="val-dewpoint">15.0</span>
+          </div>
+          <input type="range" id="sl-dewpoint" min="0" max="30" step="0.5" value="15.0" title="Dew Point in °C" />
+          <div class="slider-range-labels"><span>0</span><span>30</span></div>
+        </div>
+
+        <div class="form-section-title" style="margin-top:24px;">Moisture &amp; Cloud</div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Humidity <span class="slider-unit">%</span></span>
+            <span class="slider-val" id="val-humidity">65</span>
+          </div>
+          <input type="range" id="sl-humidity" min="0" max="100" step="1" value="65" title="Humidity percentage" />
+          <div class="slider-range-labels"><span>0%</span><span>100%</span></div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Cloud Cover <span class="slider-unit">%</span></span>
+            <span class="slider-val" id="val-cloud">50</span>
+          </div>
+          <input type="range" id="sl-cloud" min="0" max="100" step="1" value="50" title="Cloud cover percentage" />
+          <div class="slider-range-labels"><span>0%</span><span>100%</span></div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Sunshine <span class="slider-unit">hrs</span></span>
+            <span class="slider-val" id="val-sunshine">5.0</span>
+          </div>
+          <input type="range" id="sl-sunshine" min="0" max="14" step="0.1" value="5.0" title="Sunshine hours" />
+          <div class="slider-range-labels"><span>0h</span><span>14h</span></div>
+        </div>
+
+        <div class="form-section-title" style="margin-top:24px;">Wind</div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Wind Direction <span class="slider-unit">°</span></span>
+            <span class="slider-val" id="val-winddirection">180</span>
+          </div>
+          <input type="range" id="sl-winddirection" min="0" max="360" step="1" value="180" title="Wind direction in degrees" />
+          <div class="slider-range-labels"><span>0° N</span><span>360°</span></div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Wind Speed <span class="slider-unit">km/h</span></span>
+            <span class="slider-val" id="val-windspeed">20</span>
+          </div>
+          <input type="range" id="sl-windspeed" min="0" max="80" step="0.5" value="20" title="Wind speed in km/h" />
+          <div class="slider-range-labels"><span>0</span><span>80</span></div>
+        </div>
+
+      </div><!-- /sliders-card -->
+    </div>
+
+    <!-- ── RIGHT: Live result ── -->
+    <div class="result-panel">
+
+      <div class="live-card no-rain" id="liveCard">
+
+        <div class="live-icon no-rain" id="liveIcon">
+          <svg id="iconSvg" width="36" height="36" viewBox="0 0 24 24" fill="none"
+               stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5" stroke="rgba(255,190,60,0.9)"/>
+            <line x1="12" y1="1"  x2="12" y2="3"  stroke="rgba(255,190,60,0.9)"/>
+            <line x1="12" y1="21" x2="12" y2="23" stroke="rgba(255,190,60,0.9)"/>
+            <line x1="4.22" y1="4.22"   x2="5.64" y2="5.64"   stroke="rgba(255,190,60,0.9)"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="rgba(255,190,60,0.9)"/>
+            <line x1="1"  y1="12" x2="3"  y2="12" stroke="rgba(255,190,60,0.9)"/>
+            <line x1="21" y1="12" x2="23" y2="12" stroke="rgba(255,190,60,0.9)"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"   stroke="rgba(255,190,60,0.9)"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"   stroke="rgba(255,190,60,0.9)"/>
+          </svg>
+        </div>
+
+        <div class="live-verdict no-rain" id="liveVerdict">No Rainfall Expected</div>
+
+        <div class="live-ring-wrap">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle class="ring-bg" cx="70" cy="70" r="55"/>
+            <circle class="ring-fill" cx="70" cy="70" r="55"
+                    stroke="var(--warning)"
+                    stroke-dasharray="345.4"
+                    stroke-dashoffset="345.4"
+                    id="liveRing"/>
+          </svg>
+          <div class="prob-pct">
+            <span class="prob-pct-num" id="livePct">—</span>
+            <span class="prob-pct-label">% probability</span>
+          </div>
+        </div>
+
+      </div><!-- /live-card -->
+
+      <div class="breakdown-card">
+        <div class="breakdown-title">Feature Influence (importance)</div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Humidity</span>
+          <div class="breakdown-track"><div class="breakdown-fill" style="width:92%"></div></div>
+          <span class="breakdown-pct">High</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Dew Point</span>
+          <div class="breakdown-track"><div class="breakdown-fill" style="width:80%"></div></div>
+          <span class="breakdown-pct">High</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Cloud Cover</span>
+          <div class="breakdown-track"><div class="breakdown-fill" style="width:72%"></div></div>
+          <span class="breakdown-pct">Mod</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Sunshine</span>
+          <div class="breakdown-track"><div class="breakdown-fill" style="width:68%"></div></div>
+          <span class="breakdown-pct">Mod</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Pressure</span>
+          <div class="breakdown-track"><div class="breakdown-fill" style="width:50%"></div></div>
+          <span class="breakdown-pct">Low</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Wind Dir</span>
+          <div class="breakdown-track"><div class="breakdown-fill" style="width:30%"></div></div>
+          <span class="breakdown-pct">Low</span>
+        </div>
+        <div class="breakdown-row">
+          <span class="breakdown-name">Wind Speed</span>
+          <div class="breakdown-track"><div class="breakdown-fill" style="width:22%"></div></div>
+          <span class="breakdown-pct">Low</span>
+        </div>
+      </div>
+
+    </div><!-- /result-panel -->
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/whatif.js') }}" defer></script>
+
+</body>
+</html>

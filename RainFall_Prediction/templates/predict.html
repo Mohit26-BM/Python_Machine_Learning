@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Predict — RainCast</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/">Rain<span>Cast</span></a>
+  <div class="nav-links">
+    <a href="/">Overview</a>
+    <a href="/predict">Predict</a>
+    <a href="/whatif">What-If</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="predict-wrapper">
+
+    <div class="page-header">
+      <div class="hero-eyebrow" style="margin-bottom:12px;">Atmospheric Input</div>
+      <h2>Enter Weather Parameters</h2>
+      <p>Provide current meteorological readings to generate a rainfall prediction.</p>
+    </div>
+
+    <div class="form-card">
+      <form action="/result" method="POST">
+
+        <!-- Pressure & Dew -->
+        <div class="form-section-title">Atmospheric Conditions</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Pressure <span class="unit">hPa</span></label>
+            <input type="number" name="pressure" step="0.1" placeholder="e.g. 1021.5" required />
+          </div>
+          <div class="form-group">
+            <label>Dew Point <span class="unit">°C</span></label>
+            <input type="number" name="dewpoint" step="0.1" placeholder="e.g. 15.6" required />
+          </div>
+        </div>
+
+        <!-- Humidity & Cloud -->
+        <div class="form-section-title">Moisture &amp; Cloud Cover</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Humidity <span class="unit">%</span></label>
+            <input type="number" name="humidity" step="0.1" min="0" max="100" placeholder="e.g. 80" required />
+          </div>
+          <div class="form-group">
+            <label>Cloud Cover <span class="unit">%</span></label>
+            <input type="number" name="cloud" step="0.1" min="0" max="100" placeholder="e.g. 75" required />
+          </div>
+          <div class="form-group">
+            <label>Sunshine <span class="unit">hrs</span></label>
+            <input type="number" name="sunshine" step="0.1" min="0" placeholder="e.g. 4.2" required />
+          </div>
+        </div>
+
+        <!-- Wind -->
+        <div class="form-section-title">Wind Data</div>
+        <div class="form-grid" style="margin-bottom:32px;">
+          <div class="form-group">
+            <label>Wind Direction <span class="unit">°</span></label>
+            <input type="number" name="winddirection" step="1" min="0" max="360" placeholder="e.g. 180" required />
+          </div>
+          <div class="form-group">
+            <label>Wind Speed <span class="unit">km/h</span></label>
+            <input type="number" name="windspeed" step="0.1" min="0" placeholder="e.g. 22.5" required />
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          Analyze &amp; Predict Rainfall →
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

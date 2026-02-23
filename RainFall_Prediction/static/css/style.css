@@ -363,6 +363,7 @@ input[type="number"], input[type="text"] {
   width: 100%;
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
+  -moz-appearance: textfield;
   appearance: textfield;
 }
 
@@ -511,6 +512,116 @@ input::placeholder { color: var(--text-muted); }
   margin-top: 10px;
 }
 .back-link:hover { color: var(--cyan); }
+
+/* ─── FOOTER ─── */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  background: rgba(5, 13, 26, 0.8);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  margin-top: 20px;
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 40px 48px;
+}
+
+/* CTA block */
+.footer-cta-block {
+  text-align: center;
+  padding-bottom: 64px;
+}
+
+.footer-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 16px;
+}
+
+.footer-heading {
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+
+.footer-sub {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* Divider */
+.footer-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 40px;
+}
+
+/* Meta row */
+.footer-meta {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 40px;
+}
+
+.footer-tagline {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.footer-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.8rem;
+}
+
+.footer-detail-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  min-width: 72px;
+}
+
+.footer-detail-val {
+  color: var(--text-secondary);
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'Space Mono', monospace;
+  align-self: end;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .footer-inner { padding: 60px 24px 36px; }
+  .footer-meta { grid-template-columns: 1fr; gap: 24px; }
+  .footer-copy { align-self: start; }
+}
 
 /* ─── SCROLL REVEAL ─── */
 .section.reveal {

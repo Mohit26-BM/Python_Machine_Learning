@@ -1,4 +1,4 @@
-# Medical Insurance Cost Prediction Using Machine Learning
+# InsurePredict: Predict Your Medical Insurance Cost
 
 ## Overview
 

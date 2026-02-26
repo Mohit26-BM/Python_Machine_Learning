@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BigMart Sales Prediction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo">BigMart<span class="accent">.</span></div>
+    <div class="nav-links">
+      <a href="/simulator">Simulator</a>
+      <a href="/compare">Compare</a>
+      <a href="/insights">Insights</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/predict" class="nav-cta">Predictor</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="grid-overlay"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">XGBoost · R² 0.5887 · Production Ready</div>
+      <h1 class="hero-title">
+        Intelligent<br/>
+        <span class="hero-title-accent">Retail Sales</span><br/>
+        Forecasting
+      </h1>
+      <p class="hero-sub">
+        Predict item outlet sales with a production-grade machine learning pipeline.
+        Built on 8,523 retail records, tuned with 5-fold cross-validation.
+      </p>
+      <div class="hero-actions">
+        <a href="/predict" class="btn-primary">Launch Predictor</a>
+        <a href="#overview" class="btn-ghost">Explore Project ↓</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-val">8,523</span>
+          <span class="stat-label">Records</span>
+        </div>
+        <div class="stat-div"></div>
+        <div class="stat">
+          <span class="stat-val">0.5887</span>
+          <span class="stat-label">R² Score</span>
+        </div>
+        <div class="stat-div"></div>
+        <div class="stat">
+          <span class="stat-val">787.76</span>
+          <span class="stat-label">MAE</span>
+        </div>
+        <div class="stat-div"></div>
+        <div class="stat">
+          <span class="stat-val">XGBoost</span>
+          <span class="stat-label">Model</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="card-mockup">
+        <div class="card-mockup-header">
+          <span class="card-mockup-label">Sales Prediction</span>
+          <span class="card-mockup-status">Live</span>
+        </div>
+        <div class="card-mockup-result">
+          <div class="card-mockup-result-label">Predicted Outlet Sales</div>
+          <div class="card-mockup-result-value">₹3,241.80</div>
+          <div class="card-mockup-result-tag">+48.6% above average</div>
+        </div>
+        <div class="card-mockup-fields">
+          <div class="card-field">
+            <span class="card-field-label">Item MRP</span>
+            <span class="card-field-val">₹185.00</span>
+          </div>
+          <div class="card-field">
+            <span class="card-field-label">Outlet Type</span>
+            <span class="card-field-val">Supermarket Type1</span>
+          </div>
+          <div class="card-field">
+            <span class="card-field-label">Outlet Location</span>
+            <span class="card-field-val">Tier 2</span>
+          </div>
+          <div class="card-field">
+            <span class="card-field-label">Item Type</span>
+            <span class="card-field-val">Dairy</span>
+          </div>
+          <div class="card-field">
+            <span class="card-field-label">Outlet Size</span>
+            <span class="card-field-val">Medium</span>
+          </div>
+          <div class="card-field">
+            <span class="card-field-label">Fat Content</span>
+            <span class="card-field-val">Low Fat</span>
+          </div>
+        </div>
+        <div class="card-mockup-footer">
+          <span>Model: XGBoost · Tuned</span>
+          <span>R² 0.5887</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="overview">
+    <div class="container">
+      <div class="section-tag">Overview</div>
+      <h2 class="section-title">Built for Real Business Decisions</h2>
+      <p class="section-sub">An end-to-end ML application that turns raw retail data into actionable sales intelligence.</p>
+
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon">01</div>
+          <h3>Inventory Planning</h3>
+          <p>Anticipate demand at item-outlet level to reduce overstock and prevent stockouts.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">02</div>
+          <h3>Pricing Strategy</h3>
+          <p>Understand how MRP shifts impact predicted sales across outlet tiers.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">03</div>
+          <h3>Outlet Performance</h3>
+          <p>Compare predicted sales across outlet types, sizes, and locations.</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon">04</div>
+          <h3>Data-Driven Decisions</h3>
+          <p>Move beyond intuition with a model trained on 8,523 real retail records.</p>
+        </div>
+      </div>
+
+      <!-- HOW IT WORKS -->
+      <div class="how-section">
+        <div class="section-tag" style="margin-top:80px">How It Works</div>
+        <h2 class="section-title">Three Steps to a Prediction</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <h3>Enter Item & Outlet Details</h3>
+            <p>Fill in product characteristics like MRP, item type, fat content, and outlet information.</p>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <h3>XGBoost Processes Input</h3>
+            <p>Your data is encoded, aligned to the training schema, and passed through the tuned model.</p>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <h3>Get Sales Forecast</h3>
+            <p>Receive the predicted outlet sales value instantly, persisted to the cloud database.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="section section-dark" id="results">
+    <div class="container">
+      <div class="section-tag light">Model Results</div>
+      <h2 class="section-title light">Performance Across Models</h2>
+      <p class="section-sub light">Three regression models evaluated. XGBoost tuned with 5-fold cross-validation came out on top.</p>
+
+      <div class="results-table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>R² Score</th>
+              <th>MAE</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="winner-row">
+              <td><strong>XGBoost (Tuned)</strong></td>
+              <td><strong>0.5887</strong></td>
+              <td><strong>787.76</strong></td>
+              <td><span class="badge-winner">✓ Selected</span></td>
+            </tr>
+            <tr>
+              <td>Random Forest (Tuned)</td>
+              <td>0.5825</td>
+              <td>794.22</td>
+              <td><span class="badge-other">Evaluated</span></td>
+            </tr>
+            <tr>
+              <td>Decision Tree</td>
+              <td>0.2537</td>
+              <td>1078.39</td>
+              <td><span class="badge-other">Evaluated</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tuning-note">
+        Hyperparameter tuning improved XGBoost performance by <strong>+7.3%</strong> — shallow trees (max_depth=3) with a low learning rate (0.05) produced the best generalization.
+      </div>
+
+      <!-- PARAMS -->
+      <div class="params-grid">
+        <div class="param-card">
+          <span class="param-key">n_estimators</span>
+          <span class="param-val">100</span>
+        </div>
+        <div class="param-card">
+          <span class="param-key">learning_rate</span>
+          <span class="param-val">0.05</span>
+        </div>
+        <div class="param-card">
+          <span class="param-key">max_depth</span>
+          <span class="param-val">3</span>
+        </div>
+        <div class="param-card">
+          <span class="param-key">subsample</span>
+          <span class="param-val">0.8</span>
+        </div>
+        <div class="param-card">
+          <span class="param-key">colsample_bytree</span>
+          <span class="param-val">1.0</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-logo">BigMart<span class="accent">.</span></div>
+      <p class="footer-sub">BigMart Sales Prediction · ML Portfolio Project</p>
+      <a href="/predict" class="btn-primary">Try the Predictor →</a>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

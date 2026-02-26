@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulator · BigMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/simulator.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">BigMart<span class="accent">.</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/predict">Predictor</a>
+      <a href="/insights">Insights</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/simulator" class="nav-cta">Simulator</a>
+    </div>
+  </nav>
+
+  <div class="sim-page">
+    <div class="sim-header">
+      <div class="sim-header-left">
+        <h1>What-If Simulator</h1>
+        <p>Adjust any input and the prediction updates instantly. See how each feature drives the model's output in real time.</p>
+      </div>
+      <div class="sim-live">
+        <span class="sim-live-dot" id="liveDot"></span>
+        Live prediction
+      </div>
+    </div>
+
+    <div class="sim-body">
+
+      <!-- LEFT: controls -->
+      <div class="sim-controls">
+
+        <div class="sim-section-title">Continuous Features</div>
+
+        <!-- MRP -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Item MRP</span>
+            <span class="slider-value" id="valMRP">₹140.99</span>
+          </div>
+          <input type="range" id="sliderMRP" min="31.29" max="266.89" step="0.5" value="140.99"/>
+          <div class="slider-range-labels"><span>₹31.29</span><span>₹266.89</span></div>
+          <div class="importance-bar-wrap">
+            <div class="importance-bar-bg"><div class="importance-bar-fill" style="width:9.9%"></div></div>
+            <span class="importance-bar-label">9.9% importance</span>
+          </div>
+        </div>
+
+        <!-- Weight -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Item Weight (kg)</span>
+            <span class="slider-value" id="valWeight">12.9 kg</span>
+          </div>
+          <input type="range" id="sliderWeight" min="4.555" max="21.35" step="0.1" value="12.86"/>
+          <div class="slider-range-labels"><span>4.56 kg</span><span>21.35 kg</span></div>
+          <div class="importance-bar-wrap">
+            <div class="importance-bar-bg"><div class="importance-bar-fill" style="width:1.3%"></div></div>
+            <span class="importance-bar-label">1.3% importance</span>
+          </div>
+        </div>
+
+        <!-- Visibility -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">Item Visibility</span>
+            <span class="slider-value" id="valVisibility">0.066</span>
+          </div>
+          <input type="range" id="sliderVisibility" min="0" max="0.3284" step="0.001" value="0.066"/>
+          <div class="slider-range-labels"><span>0.000</span><span>0.328</span></div>
+          <div class="importance-bar-wrap">
+            <div class="importance-bar-bg"><div class="importance-bar-fill" style="width:1.8%"></div></div>
+            <span class="importance-bar-label">1.8% importance</span>
+          </div>
+        </div>
+
+        <!-- Year -->
+        <div class="select-group" style="margin-bottom:28px">
+          <label>Outlet Establishment Year</label>
+          <select id="sliderYear">
+            <option value="1985">1985</option>
+            <option value="1987">1987</option>
+            <option value="1997">1997</option>
+            <option value="1998">1998</option>
+            <option value="1999" selected>1999</option>
+            <option value="2002">2002</option>
+            <option value="2004">2004</option>
+            <option value="2007">2007</option>
+            <option value="2009">2009</option>
+          </select>
+        </div>
+
+        <div class="sim-section-title">Categorical Features</div>
+
+        <div class="select-grid">
+          <div class="select-group">
+            <label>Outlet Type <span style="font-size:0.65rem;color:var(--accent);font-weight:600">70.8%</span></label>
+            <select id="selOutletType">
+              <option value="Supermarket Type1">Supermarket Type1</option>
+              <option value="Supermarket Type2">Supermarket Type2</option>
+              <option value="Supermarket Type3">Supermarket Type3</option>
+              <option value="Grocery Store">Grocery Store</option>
+            </select>
+          </div>
+          <div class="select-group">
+            <label>Outlet Location <span style="font-size:0.65rem;color:var(--text-dim)">1.9%</span></label>
+            <select id="selLocation">
+              <option value="Tier 1">Tier 1</option>
+              <option value="Tier 2" selected>Tier 2</option>
+              <option value="Tier 3">Tier 3</option>
+            </select>
+          </div>
+          <div class="select-group">
+            <label>Outlet Size <span style="font-size:0.65rem;color:var(--text-dim)">1.6%</span></label>
+            <select id="selOutletSize">
+              <option value="Small">Small</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+          <div class="select-group">
+            <label>Item Fat Content <span style="font-size:0.65rem;color:var(--text-dim)">1.4%</span></label>
+            <select id="selFatContent">
+              <option value="Low Fat">Low Fat</option>
+              <option value="Regular">Regular</option>
+            </select>
+          </div>
+          <div class="select-group" style="grid-column: span 2">
+            <label>Item Type <span style="font-size:0.65rem;color:var(--text-dim)">1.9%</span></label>
+            <select id="selItemType">
+              <option value="Dairy" selected>Dairy</option>
+              <option value="Baking Goods">Baking Goods</option>
+              <option value="Breads">Breads</option>
+              <option value="Breakfast">Breakfast</option>
+              <option value="Canned">Canned</option>
+              <option value="Frozen Foods">Frozen Foods</option>
+              <option value="Fruits and Vegetables">Fruits and Vegetables</option>
+              <option value="Hard Drinks">Hard Drinks</option>
+              <option value="Health and Hygiene">Health and Hygiene</option>
+              <option value="Household">Household</option>
+              <option value="Meat">Meat</option>
+              <option value="Others">Others</option>
+              <option value="Seafood">Seafood</option>
+              <option value="Snack Foods">Snack Foods</option>
+              <option value="Soft Drinks">Soft Drinks</option>
+              <option value="Starchy Foods">Starchy Foods</option>
+            </select>
+          </div>
+          <div class="select-group" style="grid-column: span 2">
+            <label>Outlet Identifier <span style="font-size:0.65rem;color:var(--text-dim)">1.5%</span></label>
+            <select id="selOutletIdentifier">
+              <option value="OUT010">OUT010</option>
+              <option value="OUT013">OUT013</option>
+              <option value="OUT017">OUT017</option>
+              <option value="OUT018">OUT018</option>
+              <option value="OUT019">OUT019</option>
+              <option value="OUT027">OUT027</option>
+              <option value="OUT035">OUT035</option>
+              <option value="OUT045">OUT045</option>
+              <option value="OUT046">OUT046</option>
+              <option value="OUT049" selected>OUT049</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: live result panel -->
+      <div class="sim-result">
+
+        <!-- Main prediction -->
+        <div class="result-main" id="resultMain">
+          <div class="result-main-label">Predicted Sales</div>
+          <div class="result-main-value" id="resultValue">—</div>
+          <div class="result-main-unit">outlet sales (₹)</div>
+          <div class="result-vs-avg" id="resultVsAvg">vs avg</div>
+          <div class="result-delta" id="resultDelta" style="display:none"></div>
+        </div>
+
+        <!-- Prediction history sparkline -->
+        <div class="result-history">
+          <div class="result-history-title">Last 20 predictions</div>
+          <div class="sparkline-wrap">
+            <canvas id="sparklineChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Current input snapshot -->
+        <div class="result-impact">
+          <div class="result-impact-title">Current Inputs · by importance</div>
+          <div class="impact-row">
+            <span class="impact-key">Outlet Type <span class="impact-pct">70.8%</span></span>
+            <span class="impact-val accent" id="impactOutlet">—</span>
+          </div>
+          <div class="impact-row">
+            <span class="impact-key">Item MRP <span class="impact-pct">9.9%</span></span>
+            <span class="impact-val" id="impactMRP">—</span>
+          </div>
+          <div class="impact-row">
+            <span class="impact-key">Outlet Year <span class="impact-pct">7.7%</span></span>
+            <span class="impact-val" id="impactYear">—</span>
+          </div>
+          <div class="impact-row">
+            <span class="impact-key">Location <span class="impact-pct">1.9%</span></span>
+            <span class="impact-val" id="impactLoc">—</span>
+          </div>
+          <div class="impact-row">
+            <span class="impact-key">Item Type <span class="impact-pct">1.9%</span></span>
+            <span class="impact-val" id="impactItemType">—</span>
+          </div>
+          <div class="impact-row">
+            <span class="impact-key">Visibility <span class="impact-pct">1.8%</span></span>
+            <span class="impact-val" id="impactVis">—</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/simulator.js') }}"></script>
+</body>
+</html>

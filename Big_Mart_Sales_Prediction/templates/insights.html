@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insights · BigMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/insights.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">BigMart<span class="accent">.</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/predict">Predictor</a>
+      <a href="/insights" class="nav-cta">Insights</a>
+      <a href="/dashboard">Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="insights-page">
+    <div class="insights-header">
+      <h1>Feature Insights</h1>
+      <p>Which input features matter most to the model, and by how much. Computed directly from the trained XGBoost model — not from live predictions.</p>
+    </div>
+
+    <div class="insights-body">
+
+      <!-- LEFT: horizontal bar chart -->
+      <div>
+        <div class="chart-main">
+          <div class="chart-main-title">Feature Importance</div>
+          <div class="chart-main-sub">Relative contribution of each feature group to the model's predictions</div>
+          <div id="chartWrap" style="position:relative; height:360px">
+            <div class="loading-state" id="loadingState">Loading model data...</div>
+            <canvas id="chartImportance" style="display:none"></canvas>
+          </div>
+        </div>
+
+        <div class="insight-takeaway" id="takeawayBox" style="display:none; margin-top:18px">
+          <div class="takeaway-title">What this means</div>
+          <div class="takeaway-list" id="takeawayList"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: sidebar -->
+      <div class="insights-sidebar">
+
+        <div class="insight-card">
+          <div class="insight-card-title">Top Feature</div>
+          <div class="loading-state" style="padding:20px 0" id="topFeatureLoading">Loading...</div>
+          <div id="topFeatureContent" style="display:none">
+            <div class="top-feature-name" id="topFeatureName">—</div>
+            <div class="top-feature-pct" id="topFeaturePct">—</div>
+            <div class="top-feature-desc" id="topFeatureDesc">—</div>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-card-title">All Features Ranked</div>
+          <div class="rank-list" id="rankList">
+            <div style="color:var(--text-dim);font-size:0.82rem">Loading...</div>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-card-title">Model Info</div>
+          <div class="model-info-list">
+            <div class="model-info-row">
+              <span class="model-info-key">Algorithm</span>
+              <span class="model-info-val">XGBoost</span>
+            </div>
+            <div class="model-info-row">
+              <span class="model-info-key">R² Score</span>
+              <span class="model-info-val green">0.5887</span>
+            </div>
+            <div class="model-info-row">
+              <span class="model-info-key">MAE</span>
+              <span class="model-info-val">787.76</span>
+            </div>
+            <div class="model-info-row">
+              <span class="model-info-key">max_depth</span>
+              <span class="model-info-val">3</span>
+            </div>
+            <div class="model-info-row">
+              <span class="model-info-key">learning_rate</span>
+              <span class="model-info-val">0.05</span>
+            </div>
+            <div class="model-info-row">
+              <span class="model-info-key">n_estimators</span>
+              <span class="model-info-val">100</span>
+            </div>
+            <div class="model-info-row">
+              <span class="model-info-key">Training records</span>
+              <span class="model-info-val">8,523</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/insights.js') }}"></script>
+</body>
+</html>

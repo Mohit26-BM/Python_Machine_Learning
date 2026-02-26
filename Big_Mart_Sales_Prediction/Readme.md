@@ -1,277 +1,345 @@
-# BigMart Sales Prediction Using Machine Learning
+# BigMart Sales Prediction
+
+A full-stack machine learning web application that predicts outlet-level sales for BigMart products using a trained XGBoost model.
+
+Built with:
+
+* Flask
+* Vanilla JavaScript
+* Supabase (for live data persistence)
+
+---
 
 ## Overview
 
-This project predicts **item outlet sales** for a retail chain using machine learning regression models. Accurate sales prediction helps businesses improve inventory planning, pricing strategies, and outlet performance analysis.
+The BigMart dataset contains sales data for **1,559 products across 10 outlets**.
+The goal is to predict:
 
-The full pipeline covers data cleaning, missing value imputation, feature encoding, model training, hyperparameter tuning, performance comparison, and deployment as an interactive web application backed by a persistent cloud database.
-
----
-
-## Dataset Description
-
-- **Dataset file:** `train.csv`
-- **Total records:** 8,523
-- **Target variable:** `Item_Outlet_Sales`
-
-### Key Features
-
-| Feature | Type | Description |
-|---|---|---|
-| `Item_Weight` | Numerical | Weight of the product |
-| `Item_Fat_Content` | Categorical | Low Fat / Regular |
-| `Item_Visibility` | Numerical | Display area percentage in store |
-| `Item_Type` | Categorical | Product category |
-| `Item_MRP` | Numerical | Maximum retail price |
-| `Outlet_Identifier` | Categorical | Unique outlet ID |
-| `Outlet_Establishment_Year` | Numerical | Year outlet was established |
-| `Outlet_Size` | Categorical | Small / Medium / High |
-| `Outlet_Location_Type` | Categorical | Tier 1 / Tier 2 / Tier 3 |
-| `Outlet_Type` | Categorical | Grocery Store / Supermarket Type 1–3 |
-
-### Data Quality Notes
-
-- Missing values in `Item_Weight` (1,463 records) and `Outlet_Size` (2,410 records)
-- No duplicate records
-- Inconsistent labels in `Item_Fat_Content`
-
----
-
-## Data Preprocessing
-
-### Handling Missing Values
-
-- `Item_Weight` — filled using **mean imputation** (distribution was approximately symmetric, skew ≈ 0)
-- `Outlet_Size` — filled using **mode per Outlet_Type** via pivot table mapping
-
-### Feature Cleaning
-
-Standardized inconsistent labels in `Item_Fat_Content`:
-
-| Original | Standardized |
-|---|---|
-| `LF`, `low fat` | `Low Fat` |
-| `reg` | `Regular` |
-
-### Encoding
-
-- **Label Encoding** applied to ordinal columns: `Outlet_Size`, `Outlet_Location_Type`
-- **Label Encoding** applied to nominal columns: `Item_Fat_Content`, `Item_Type`, `Outlet_Identifier`, `Outlet_Type`
-- `Item_Identifier` dropped — acts as a product ID with no predictive value
-
----
-
-## Train–Test Split
-
-- Training set: **80%**
-- Test set: **20%**
-- `random_state=2` fixed for reproducibility
-
----
-
-## Models Trained
-
-Three regression models were trained and evaluated:
-
-- XGBoost Regressor
-- Random Forest Regressor
-- Decision Tree Regressor
-
----
-
-## Baseline Model Performance
-
-Initial results before hyperparameter tuning:
-
-| Model | MAE (↓) | MSE (↓) | R² Score (↑) |
-|---|---:|---:|---:|
-| XGBoost Regressor | 858.95 | 1,495,063.46 | 0.5157 |
-| Random Forest Regressor | 827.20 | 1,397,686.45 | 0.5472 |
-| Decision Tree Regressor | 1,078.39 | 2,303,799.63 | 0.2537 |
-
----
-
-## Hyperparameter Tuning
-
-`RandomizedSearchCV` with 5-fold cross-validation and 30 iterations was used to tune both top-performing models.
-
-### XGBoost — Search Space
-
-```python
-xgb_params = {
-    'n_estimators':      [100, 200, 300],
-    'learning_rate':     [0.01, 0.05, 0.1, 0.2],
-    'max_depth':         [3, 5, 7, 9],
-    'subsample':         [0.6, 0.8, 1.0],
-    'colsample_bytree':  [0.6, 0.8, 1.0]
-}
+```bash
+Item_Outlet_Sales
 ```
 
-### XGBoost — Best Parameters
+— the sales of each product in each store.
 
-```
-n_estimators=100, learning_rate=0.05, max_depth=3,
-subsample=0.8, colsample_bytree=1.0
-```
+This app exposes the trained model through four interactive interfaces:
 
-### Random Forest — Search Space
+1. Standard prediction form
+2. What-if simulator
+3. Scenario comparator
+4. Live analytics dashboard
 
-```python
-rf_params = {
-    'n_estimators':      [100, 200, 300, 500],
-    'max_depth':         [None, 5, 10, 15, 20],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf':  [1, 2, 4],
-    'max_features':      ['sqrt', 'log2']
-}
-```
+All pages use:
 
-### Random Forest — Best Parameters
-
-```
-n_estimators=500, max_depth=10, min_samples_split=10,
-min_samples_leaf=2, max_features='log2'
-```
+* The same trained model
+* The same encoding pipeline
 
 ---
 
-## Final Model Performance (Post-Tuning)
+## Model Performance
 
-| Model | MAE (↓) | MSE (↓) | R² Score (↑) | Improvement |
-|---|---:|---:|---:|---:|
-| XGBoost Regressor | 787.76 | 1,269,865.49 | **0.5887** | +7.3% |
-| Random Forest Regressor | 794.22 | 1,288,989.49 | 0.5825 | +3.5% |
+| Metric           | Value   |
+| ---------------- | ------- |
+| Algorithm        | XGBoost |
+| R² Score         | 0.5887  |
+| MAE              | 787.76  |
+| Training Records | 8,523   |
 
-**XGBoost was selected as the final model** — it achieved the best R², lowest MAE, and lowest MSE after tuning. The shallow tree depth (`max_depth=3`) combined with a low learning rate (`0.05`) indicates a well-regularized model that generalizes rather than memorizing training data.
+### Key Insight
 
----
+**Outlet Type accounts for ~70% of total feature importance.**
 
-## Key Insights
+Where a product is sold matters far more than what the product is.
 
-- Hyperparameter tuning improved XGBoost R² from 0.5157 → 0.5887 (+7.3%)
-- Shallow XGBoost trees with slow learning outperformed deeper configurations
-- Random Forest required 500 estimators to reach peak performance
-- Decision Tree significantly overfits and was dropped from the final pipeline
-- ~0.59 R² is close to the ceiling for this dataset — sales data contains inherent noise from factors like promotions and seasonality not captured in the features
-
----
-
-## Deployment
-
-The final XGBoost model is deployed as a **Streamlit web application** with three pages:
-
-### Predict
-- Input form for item and outlet details
-- Instant sales prediction with comparison to dataset average
-- Every prediction is automatically saved to the database
-
-### Dashboard
-- KPI cards: total predictions, average sales, highest prediction
-- 6 visualizations: sales over time, by outlet type, by item type, by location tier, MRP vs sales scatter, by fat content
-
-### History
-- Full prediction log with filter controls (Outlet ID, Outlet Type, Sales Range)
-- Download filtered results as CSV
-
-### Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Model | XGBoost (joblib serialized) |
-| Frontend | Streamlit |
-| Database | Supabase (PostgreSQL) |
-| Hosting | Streamlit Community Cloud |
-
-### Supabase Integration
-
-Predictions are persisted in a **Supabase PostgreSQL** database, replacing ephemeral CSV storage. This ensures prediction history survives app restarts, redeployments, and Streamlit's sleep cycles.
-
-The `bigmart_predictions` table schema:
-
-```
-id                  int8        primary key, auto-increment
-created_at          timestamptz default now()
-item_weight         float8
-item_fat_content    text
-item_visibility     float8
-item_type           text
-item_mrp            float8
-outlet_identifier   text
-outlet_year         int8
-outlet_size         text
-outlet_location     text
-outlet_type         text
-predicted_sales     float8
-```
-
-Credentials are stored securely in **Streamlit Secrets** and never committed to the repository.
+* Switching from *Grocery Store* → *Supermarket Type3* can shift predictions by ₹2,000+
+* Changing Item Type or Visibility typically moves predictions by < ₹50
 
 ---
 
 ## Project Structure
 
-```
-Big_Mart_Sales_Prediction/
-├── app.py                  # Main app — config, CSS, tabs, routing
-├── best_model.pkl          # Serialized XGBoost model
-├── model_columns.pkl       # Feature column order
-├── requirements.txt        # Python dependencies
-├── BigMart_Sales.ipynb     # Training notebook
-├── utils/
-│   ├── __init__.py
-│   ├── model.py            # Model loading and feature mappings
-│   └── database.py         # Supabase client and fetch helper
-└── pages/
-    ├── __init__.py
-    ├── predict.py          # Predict page
-    ├── dashboard.py        # Dashboard page
-    └── history.py          # History page
+```bash
+bigmart/
+├── app.py
+├── best_model.pkl
+├── model_columns.pkl
+│
+├── templates/
+│   ├── index.html
+│   ├── predict.html
+│   ├── simulator.html
+│   ├── compare.html
+│   ├── dashboard.html
+│   └── insights.html
+│
+└── static/
+    ├── css/
+    │   ├── style.css
+    │   ├── simulator.css
+    │   ├── compare.css
+    │   ├── dashboard.css
+    │   └── insights.css
+    │
+    └── js/
+        ├── main.js
+        ├── predict.js
+        ├── simulator.js
+        ├── compare.js
+        ├── dashboard.js
+        └── insights.js
 ```
 
 ---
 
-## Requirements
+## Pages
 
+### `/` — Home
+
+Landing page with project overview and entry point to the simulator.
+
+### `/predict`
+
+Standard form for entering item and outlet details.
+Every submission saves predictions to Supabase.
+
+### `/simulator`
+
+Live what-if interface:
+
+* Sliders for MRP, Weight, Visibility
+* Dropdowns for categorical fields
+* ~120ms debounced API prediction updates
+* Sparkline (last 20 predictions)
+* Delta indicator (shows prediction shift)
+
+### `/compare`
+
+Outlet comparison tool:
+
+* Shared item fields
+* Different outlet configurations
+* Single `/api/compare` call
+* Bar chart
+* % difference
+* Winner badge
+* Diff table
+* Business recommendation
+
+### `/dashboard`
+
+Live analytics via Supabase:
+
+* Total predictions
+* Average vs dataset average
+* Highest prediction
+* Top outlet type
+* Timeline chart
+* Outlet type bar chart
+* Histogram
+* Location doughnut
+* MRP vs Sales scatter
+* Recent predictions table
+
+### `/insights`
+
+Feature importance visualization from:
+
+```python
+model.feature_importances_
 ```
-streamlit
-pandas
+
+Includes:
+
+* Grouped dummy features
+* Horizontal bar chart
+* Ranked list
+* Business takeaways
+* Model hyperparameters
+
+---
+
+## Setup
+
+### Requirements
+
+```bash
+flask
+joblib
 numpy
+pandas
 scikit-learn
 xgboost
-joblib
 supabase
 ```
 
-Install with:
+Install:
 
 ```bash
-pip install streamlit pandas numpy scikit-learn xgboost joblib supabase
+pip install flask joblib numpy pandas scikit-learn xgboost supabase
 ```
 
 ---
 
-## How to Run Locally
+### ▶ Running Locally
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/yourusername/python_machine_learning.git
-cd python_machine_learning/Big_Mart_Sales_Prediction
+python app.py
+```
 
-# 2. Install dependencies
-pip install -r requirements.txt
+App runs at:
 
-# 3. Add Streamlit secrets
-mkdir .streamlit
-echo '[secrets]
-SUPABASE_URL = "your_supabase_url"
-SUPABASE_KEY = "your_anon_key"' > .streamlit/secrets.toml
-
-# 4. Run the app
-streamlit run app.py
+```bash
+http://127.0.0.1:5000
 ```
 
 ---
 
-## Conclusion
+## Supabase Configuration
 
-This project demonstrates an end-to-end machine learning pipeline — from raw data preprocessing through model selection, hyperparameter tuning, and production deployment. XGBoost with tuned shallow trees delivered the best performance at R² = 0.589, and the application persists all predictions in a cloud database for ongoing analytics via the built-in dashboard.
+Set credentials in either:
+
+* Environment variables
+* Directly in `app.py`
+
+```python
+SUPABASE_URL = "your_project_url"
+SUPABASE_KEY = "your_anon_key"
+```
+
+Also update credentials in:
+
+```bash
+static/js/dashboard.js
+```
+
+---
+
+### Expected Table Schema
+
+```sql
+create table public.bigmart_predictions (
+  id bigint generated by default as identity not null,
+  created_at timestamp with time zone not null default now(),
+  item_weight double precision,
+  item_fat_content text,
+  item_visibility double precision,
+  item_type text,
+  item_mrp double precision,
+  outlet_identifier text,
+  outlet_year bigint,
+  outlet_size text,
+  outlet_location text,
+  outlet_type text,
+  predicted_sales double precision,
+  constraint bigmart_predictions_pkey primary key (id)
+);
+```
+
+---
+
+## 🔢 Encoding Strategy
+
+The model was trained using **LabelEncoder** (not one-hot encoding).
+
+`app.py` replicates the exact encoding used during training.
+
+| Feature              | Encoding                                                       |
+| -------------------- | -------------------------------------------------------------- |
+| Item_Fat_Content     | Low Fat → 0, Regular → 1                                       |
+| Outlet_Type          | Grocery Store → 0, Supermarket Type1 → 1, Type2 → 2, Type3 → 3 |
+| Outlet_Size          | High → 0, Medium → 1, Small → 2                                |
+| Outlet_Location_Type | Tier 1 → 0, Tier 2 → 1, Tier 3 → 2                             |
+| Item_Type            | Alphabetical order (0–15)                                      |
+| Outlet_Identifier    | Alphabetical order (OUT010–OUT049 → 0–9)                       |
+
+Input normalization guards handle dirty values:
+
+* `LF` → Low Fat
+* `reg` → Regular
+
+Matching the preprocessing used during training.
+
+---
+
+## 🔌 API Routes
+
+| Method | Route                     | Description                       |
+| ------ | ------------------------- | --------------------------------- |
+| GET    | `/`                       | Home page                         |
+| GET    | `/predict`                | Prediction page                   |
+| GET    | `/simulator`              | Simulator page                    |
+| GET    | `/compare`                | Comparison page                   |
+| GET    | `/dashboard`              | Analytics dashboard               |
+| GET    | `/insights`               | Feature insights                  |
+| POST   | `/api/predict`            | Single prediction + Supabase save |
+| POST   | `/api/compare`            | Dual prediction                   |
+| GET    | `/api/feature-importance` | Model feature importance          |
+
+---
+
+### `/api/predict` Request Body
+
+```json
+{
+  "Item_Weight": 12.86,
+  "Item_Fat_Content": "Low Fat",
+  "Item_Visibility": 0.066,
+  "Item_Type": "Dairy",
+  "Item_MRP": 140.99,
+  "Outlet_Identifier": "OUT049",
+  "Outlet_Establishment_Year": 1999,
+  "Outlet_Size": "Medium",
+  "Outlet_Location_Type": "Tier 1",
+  "Outlet_Type": "Supermarket Type1"
+}
+```
+
+---
+
+### `/api/compare` Request Body
+
+```json
+{
+  "a": { ...same fields... },
+  "b": { ...same fields with different outlet config... }
+}
+```
+
+---
+
+## Data Ranges
+
+| Field           | Min     | Max      | Mean     |
+| --------------- | ------- | -------- | -------- |
+| Item MRP        | ₹31.29  | ₹266.89  | ₹140.99  |
+| Item Weight     | 4.56 kg | 21.35 kg | 12.86 kg |
+| Item Visibility | 0.000   | 0.328    | 0.066    |
+
+Valid Outlet Establishment Years:
+
+```bash
+1985, 1987, 1997, 1998, 1999, 2002, 2004, 2007, 2009
+```
+
+---
+
+## Feature Importance
+
+| Feature                   | Importance |
+| ------------------------- | ---------- |
+| Outlet Type               | 70.8%      |
+| Item MRP                  | 9.9%       |
+| Outlet Establishment Year | 7.7%       |
+| Outlet Location Type      | 1.9%       |
+| Item Type                 | 1.9%       |
+| Item Visibility           | 1.8%       |
+| Outlet Size               | 1.6%       |
+| Outlet Identifier         | 1.5%       |
+| Item Fat Content          | 1.4%       |
+| Item Weight               | 1.3%       |
+
+### Interpretation
+
+The dominance of **Outlet Type** is a property of the dataset.
+
+Where a product is sold explains most of the variance in sales.
+Product-level features have measurably smaller effects.

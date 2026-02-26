@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compare · BigMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/compare.css') }}">
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">BigMart<span class="accent">.</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/predict">Predictor</a>
+      <a href="/insights">Insights</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/compare" class="nav-cta">Compare</a>
+    </div>
+  </nav>
+
+  <div class="compare-page">
+
+    <div class="compare-header">
+      <h1>Scenario Comparison</h1>
+      <p>Set the item once, configure two different outlets, and see which predicts higher sales — with a full breakdown of why.</p>
+    </div>
+
+    <!-- SHARED ITEM FIELDS (same for both scenarios) -->
+    <div class="shared-fields">
+      <div class="shared-label">Item Details — shared across both scenarios</div>
+      <div class="shared-grid">
+
+        <div class="cmp-field">
+          <label>Item MRP (₹)</label>
+          <input type="number" id="sharedMRP" placeholder="31.29 – 266.89"
+                 min="31.29" max="266.89" step="0.01" value="140.99"/>
+        </div>
+
+        <div class="cmp-field">
+          <label>Item Type</label>
+          <select id="sharedItemType">
+            <option value="Dairy" selected>Dairy</option>
+            <option value="Baking Goods">Baking Goods</option>
+            <option value="Breads">Breads</option>
+            <option value="Breakfast">Breakfast</option>
+            <option value="Canned">Canned</option>
+            <option value="Frozen Foods">Frozen Foods</option>
+            <option value="Fruits and Vegetables">Fruits and Vegetables</option>
+            <option value="Hard Drinks">Hard Drinks</option>
+            <option value="Health and Hygiene">Health and Hygiene</option>
+            <option value="Household">Household</option>
+            <option value="Meat">Meat</option>
+            <option value="Others">Others</option>
+            <option value="Seafood">Seafood</option>
+            <option value="Snack Foods">Snack Foods</option>
+            <option value="Soft Drinks">Soft Drinks</option>
+            <option value="Starchy Foods">Starchy Foods</option>
+          </select>
+        </div>
+
+        <div class="cmp-field">
+          <label>Item Weight (kg)</label>
+          <input type="number" id="sharedWeight" placeholder="4.56 – 21.35"
+                 min="4.555" max="21.35" step="0.1" value="12.86"/>
+        </div>
+
+        <div class="cmp-field">
+          <label>Item Fat Content</label>
+          <select id="sharedFatContent">
+            <option value="Low Fat">Low Fat</option>
+            <option value="Regular">Regular</option>
+          </select>
+        </div>
+
+        <div class="cmp-field">
+          <label>Item Visibility</label>
+          <input type="number" id="sharedVisibility" placeholder="0.000 – 0.328"
+                 min="0" max="0.3284" step="0.001" value="0.066"/>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TWO OUTLET PANELS -->
+    <div class="compare-forms">
+
+      <!-- SCENARIO A -->
+      <div class="scenario-panel panel-a">
+        <div class="scenario-badge badge-a">
+          <span class="scenario-badge-dot"></span>
+          Scenario A
+        </div>
+
+        <div class="scenario-section-title">Outlet Configuration</div>
+        <div class="scenario-grid">
+
+          <div class="cmp-field full">
+            <label>Outlet Type</label>
+            <select id="aOutletType">
+              <option value="Supermarket Type1" selected>Supermarket Type1</option>
+              <option value="Supermarket Type2">Supermarket Type2</option>
+              <option value="Supermarket Type3">Supermarket Type3</option>
+              <option value="Grocery Store">Grocery Store</option>
+            </select>
+          </div>
+
+          <div class="cmp-field">
+            <label>Outlet Size</label>
+            <select id="aOutletSize">
+              <option value="Small">Small</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+
+          <div class="cmp-field">
+            <label>Location Tier</label>
+            <select id="aLocation">
+              <option value="Tier 1" selected>Tier 1</option>
+              <option value="Tier 2">Tier 2</option>
+              <option value="Tier 3">Tier 3</option>
+            </select>
+          </div>
+
+          <div class="cmp-field full">
+            <label>Outlet Establishment Year</label>
+            <select id="aYear">
+              <option value="1985">1985</option>
+              <option value="1987">1987</option>
+              <option value="1997">1997</option>
+              <option value="1998">1998</option>
+              <option value="1999" selected>1999</option>
+              <option value="2002">2002</option>
+              <option value="2004">2004</option>
+              <option value="2007">2007</option>
+              <option value="2009">2009</option>
+            </select>
+          </div>
+
+          <div class="cmp-field full">
+            <label>Outlet Identifier</label>
+            <select id="aOutletIdentifier">
+              <option value="OUT010">OUT010</option>
+              <option value="OUT013">OUT013</option>
+              <option value="OUT017">OUT017</option>
+              <option value="OUT018">OUT018</option>
+              <option value="OUT019">OUT019</option>
+              <option value="OUT027" selected>OUT027</option>
+              <option value="OUT035">OUT035</option>
+              <option value="OUT045">OUT045</option>
+              <option value="OUT046">OUT046</option>
+              <option value="OUT049">OUT049</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CENTER DIVIDER -->
+      <div class="compare-divider">
+        <div class="divider-line"></div>
+        <span class="divider-vs">VS</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- SCENARIO B -->
+      <div class="scenario-panel panel-b">
+        <div class="scenario-badge badge-b">
+          <span class="scenario-badge-dot"></span>
+          Scenario B
+        </div>
+
+        <div class="scenario-section-title">Outlet Configuration</div>
+        <div class="scenario-grid">
+
+          <div class="cmp-field full">
+            <label>Outlet Type</label>
+            <select id="bOutletType">
+              <option value="Supermarket Type1">Supermarket Type1</option>
+              <option value="Supermarket Type2">Supermarket Type2</option>
+              <option value="Supermarket Type3">Supermarket Type3</option>
+              <option value="Grocery Store" selected>Grocery Store</option>
+            </select>
+          </div>
+
+          <div class="cmp-field">
+            <label>Outlet Size</label>
+            <select id="bOutletSize">
+              <option value="Small" selected>Small</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+
+          <div class="cmp-field">
+            <label>Location Tier</label>
+            <select id="bLocation">
+              <option value="Tier 1">Tier 1</option>
+              <option value="Tier 2">Tier 2</option>
+              <option value="Tier 3" selected>Tier 3</option>
+            </select>
+          </div>
+
+          <div class="cmp-field full">
+            <label>Outlet Establishment Year</label>
+            <select id="bYear">
+              <option value="1985">1985</option>
+              <option value="1987">1987</option>
+              <option value="1997">1997</option>
+              <option value="1998">1998</option>
+              <option value="1999">1999</option>
+              <option value="2002">2002</option>
+              <option value="2004">2004</option>
+              <option value="2007" selected>2007</option>
+              <option value="2009">2009</option>
+            </select>
+          </div>
+
+          <div class="cmp-field full">
+            <label>Outlet Identifier</label>
+            <select id="bOutletIdentifier">
+              <option value="OUT010">OUT010</option>
+              <option value="OUT013">OUT013</option>
+              <option value="OUT017">OUT017</option>
+              <option value="OUT018">OUT018</option>
+              <option value="OUT019" selected>OUT019</option>
+              <option value="OUT027">OUT027</option>
+              <option value="OUT035">OUT035</option>
+              <option value="OUT045">OUT045</option>
+              <option value="OUT046">OUT046</option>
+              <option value="OUT049">OUT049</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COMPARE BUTTON -->
+    <div class="compare-action">
+      <div class="insight-note" style="margin-bottom:14px">
+        <span class="insight-note-icon">↑</span>
+        The biggest swings come from <strong>Outlet Type</strong> — switching between Grocery Store and Supermarket Type3 can shift predictions by ₹2,000+. Product-level fields have much smaller effect by comparison.
+      </div>
+      <button class="compare-btn" id="compareBtn" onclick="runCompare()">
+        Compare Scenarios
+      </button>
+      <div class="compare-error hidden" id="compareError"></div>
+    </div>
+
+    <!-- RESULTS — hidden until first compare -->
+    <div class="results-section" id="resultsSection">
+
+      <div class="results-divider"></div>
+
+      <!-- SCORE CARDS -->
+      <div class="results-scores">
+        <div class="score-card score-a" id="scoreCardA">
+          <div class="score-card-label">
+            <span class="dot dot-a"></span>
+            Scenario A
+          </div>
+          <div class="score-card-value" id="scoreValueA">—</div>
+          <div class="score-card-sub" id="scoreSubA">predicted sales</div>
+          <div class="winner-badge badge-a" id="winnerBadgeA" style="display:none">Winner</div>
+        </div>
+        <div class="score-card score-b" id="scoreCardB">
+          <div class="score-card-label">
+            <span class="dot dot-b"></span>
+            Scenario B
+          </div>
+          <div class="score-card-value" id="scoreValueB">—</div>
+          <div class="score-card-sub" id="scoreSubB">predicted sales</div>
+          <div class="winner-badge badge-b" id="winnerBadgeB" style="display:none">Winner</div>
+        </div>
+      </div>
+
+      <!-- BAR CHART -->
+      <div class="results-bar-card">
+        <div class="results-bar-title">Sales Comparison</div>
+        <div class="bar-row">
+          <span class="bar-label lbl-a" id="barLabelA">A</span>
+          <div class="bar-track">
+            <div class="bar-fill bar-fill-a" id="barFillA">
+              <span class="bar-fill-label" id="barFillLabelA"></span>
+            </div>
+          </div>
+          <span class="bar-val" id="barValA">—</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label lbl-b" id="barLabelB">B</span>
+          <div class="bar-track">
+            <div class="bar-fill bar-fill-b" id="barFillB">
+              <span class="bar-fill-label" id="barFillLabelB"></span>
+            </div>
+          </div>
+          <span class="bar-val" id="barValB">—</span>
+        </div>
+      </div>
+
+      <!-- DIFF + INPUTS -->
+      <div class="results-meta">
+
+        <div class="diff-card">
+          <div class="diff-label">Difference</div>
+          <div class="diff-value" id="diffValue">—</div>
+          <div class="diff-sub" id="diffSub">—</div>
+        </div>
+
+        <div class="diff-inputs-card" id="diffInputsCard">
+          <div class="diff-inputs-title">What's different between the scenarios</div>
+          <table class="diff-table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th style="color:#a5b4fc">Scenario A</th>
+                <th style="color:#fcd34d">Scenario B</th>
+              </tr>
+            </thead>
+            <tbody id="diffTableBody"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- RECOMMENDATION -->
+      <div class="recommendation-card">
+        <div class="recommendation-title">Business Recommendation</div>
+        <div class="recommendation-text" id="recommendationText">—</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+</body>
+</html>

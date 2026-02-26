@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard · BigMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav class="nav">
+    <a href="/" class="nav-logo">BigMart<span class="accent">.</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/insights">Insights</a>
+      <a href="/predict">Predictor</a>
+      <a href="/dashboard" class="nav-cta">Dashboard</a>
+    </div>
+  </nav>
+
+  <div class="dash-page">
+    <div class="dash-header">
+      <div class="dash-header-left">
+        <h1>Prediction Dashboard</h1>
+        <p>Live analytics from all predictions stored in Supabase</p>
+      </div>
+      <div class="dash-live">
+        <span class="dash-live-dot"></span>
+        Live · bigmart_predictions
+      </div>
+    </div>
+
+    <div class="dash-body">
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Predictions</div>
+          <div class="kpi-value kpi-accent" id="kpiTotal">—</div>
+          <div class="kpi-sub" id="kpiTotalSub">all time</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Average Predicted Sales</div>
+          <div class="kpi-value" id="kpiAvg">—</div>
+          <div class="kpi-sub" id="kpiAvgSub">vs dataset avg</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Highest Prediction</div>
+          <div class="kpi-value kpi-green" id="kpiMax">—</div>
+          <div class="kpi-sub" id="kpiMaxSub">single prediction</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Top Outlet Type</div>
+          <div class="kpi-value" id="kpiOutlet" style="font-size:1rem;padding-top:4px;letter-spacing:-0.2px">—</div>
+          <div class="kpi-sub" id="kpiOutletSub">most predicted</div>
+        </div>
+      </div>
+
+      <!-- ROW 1: Timeline + Outlet Type -->
+      <div class="chart-grid chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-card-title">Predictions Over Time</div>
+          <div class="chart-card-sub">Daily prediction count</div>
+          <div class="chart-wrap" style="height:210px">
+            <canvas id="chartTimeline"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Average Sales by Outlet Type</div>
+          <div class="chart-card-sub">Mean predicted_sales per outlet_type</div>
+          <div class="chart-wrap" style="height:210px">
+            <canvas id="chartOutletType"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2: Histogram + Location Doughnut -->
+      <div class="chart-grid chart-grid-3">
+        <div class="chart-card">
+          <div class="chart-card-title">Sales Distribution</div>
+          <div class="chart-card-sub">Histogram of all predicted_sales values</div>
+          <div class="chart-wrap" style="height:210px">
+            <canvas id="chartHistogram"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Location Tier Breakdown</div>
+          <div class="chart-card-sub">Predictions by outlet_location</div>
+          <div class="chart-wrap" style="height:210px">
+            <canvas id="chartLocation"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 3: MRP vs Sales scatter -->
+      <div class="chart-grid" style="grid-template-columns:1fr; margin-bottom:18px">
+        <div class="chart-card">
+          <div class="chart-card-title">Item MRP vs Predicted Sales</div>
+          <div class="chart-card-sub">Relationship between item_mrp and predicted_sales across all predictions</div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="chartScatter"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <span class="table-card-title">Recent Predictions</span>
+          <span class="table-card-sub">Last 10 entries</span>
+        </div>
+        <div id="tableWrap">
+          <div class="state-box">Loading...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,517 @@
+/*
+  compare.css — Scenario Comparison Page
+  =======================================
+
+  WHAT THIS FILE IS:
+  - All styles specific to /compare
+  - Imports nothing — relies on style.css variables (--bg, --accent, etc.)
+  - Three main zones: form panels (left/right), divider (center), results (bottom)
+
+  WHAT TO KEEP IN MIND:
+  - The two scenario forms must feel visually equal — do not make A feel "primary"
+    and B feel "secondary". They are peers. Same padding, same font sizes, same border.
+  - The only visual distinction allowed between A and B is color:
+      Scenario A → --accent (#6366f1, indigo)
+      Scenario B → --compare-b (#f59e0b, amber)
+    These are used on badges, borders-on-focus, and the result bars only.
+  - The result section starts hidden (display:none) and is revealed after compare.
+    Do NOT show empty result cards on load — it looks broken.
+  - The winner badge should be prominent but not garish. A subtle background tint
+    with a colored border is enough. Avoid heavy drop shadows or glows.
+  - The bar chart uses two horizontal bars, not a Chart.js instance —
+    pure CSS width animation is faster and cleaner for just two values.
+  - "Which inputs differ" section: only show rows where A !== B.
+    If both scenarios are identical, hide this section entirely.
+  - Recommendation text is generated in JS — this file just styles the container.
+    Keep it readable: 0.875rem, line-height 1.7, muted color.
+
+  WHAT TO AVOID:
+  - Do not add a third scenario column. Two is the point.
+  - Do not animate the form panels on load — only animate the results reveal.
+  - Do not use a fixed height on .results-section. Let it grow with content.
+  - Do not style the <select> arrow with a custom SVG — the browser default
+    is fine and avoids cross-browser headaches.
+  - Do not change --compare-b to match --accent. They must be visually distinct.
+*/
+
+:root {
+  --compare-b: #f59e0b;
+  --compare-b-light: rgba(245,158,11,0.12);
+}
+
+.compare-page { padding-top: 60px; min-height: 100vh; background: var(--bg); }
+
+/* HEADER */
+.compare-header {
+  padding: 36px 48px 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.compare-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.compare-header p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  max-width: 540px;
+}
+
+/* FORMS LAYOUT */
+.compare-forms {
+  display: grid;
+  grid-template-columns: 1fr 56px 1fr;
+  gap: 0;
+  padding: 32px 48px 0;
+  align-items: start;
+}
+
+/* Individual scenario panel */
+.scenario-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+/* Badge A / B */
+.scenario-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin-bottom: 20px;
+}
+
+.scenario-badge-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+
+.badge-a .scenario-badge-dot { background: var(--accent); }
+.badge-a { color: var(--accent); }
+
+.badge-b .scenario-badge-dot { background: var(--compare-b); }
+.badge-b { color: var(--compare-b); }
+
+/* Shared item fields — shown once above both panels */
+.shared-fields {
+  padding: 24px 48px 0;
+}
+
+.shared-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shared-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.shared-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+/* Form fields (reused from style.css pattern) */
+.cmp-field { display: flex; flex-direction: column; gap: 6px; }
+
+.cmp-field label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.cmp-field input,
+.cmp-field select {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+  width: 100%;
+}
+
+.cmp-field input:focus,
+.cmp-field select:focus { border-color: rgba(99,102,241,0.45); }
+
+/* Scenario A inputs get indigo focus, B gets amber */
+.panel-b .cmp-field input:focus,
+.panel-b .cmp-field select:focus { border-color: rgba(245,158,11,0.45); }
+
+.cmp-field input::placeholder { color: var(--text-dim); }
+.cmp-field select option { background: var(--surface2); }
+
+.scenario-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+  margin: 20px 0 14px;
+}
+
+.scenario-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.scenario-grid .cmp-field.full { grid-column: span 2; }
+
+/* CENTER DIVIDER */
+.compare-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 48px;
+  gap: 12px;
+}
+
+.divider-line {
+  width: 1px;
+  flex: 1;
+  background: var(--border);
+  max-height: 60px;
+}
+
+.divider-vs {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  background: var(--bg);
+  padding: 4px 0;
+}
+
+/* COMPARE BUTTON */
+.compare-action {
+  padding: 24px 48px 32px;
+}
+
+.compare-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 13px 24px;
+  border-radius: var(--radius);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.compare-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.compare-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.compare-error {
+  margin-top: 12px;
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: #f87171;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+}
+
+.compare-error.hidden { display: none; }
+
+/* RESULTS SECTION */
+.results-section {
+  padding: 0 48px 64px;
+  display: none; /* shown by JS after first compare */
+}
+
+.results-section.visible {
+  display: block;
+  animation: fadeUp 0.4s ease both;
+}
+
+.results-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 28px;
+}
+
+/* Score cards row */
+.results-scores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.score-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.score-card.winner-a { border-color: rgba(99,102,241,0.4); background: rgba(99,102,241,0.04); }
+.score-card.winner-b { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.04); }
+
+.score-card-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.score-card-label .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+
+.dot-a { background: var(--accent); }
+.dot-b { background: var(--compare-b); }
+
+.score-card-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.score-a .score-card-value { color: var(--accent); }
+.score-b .score-card-value { color: var(--compare-b); }
+
+.score-card-sub { font-size: 0.75rem; color: var(--text-dim); }
+
+.winner-badge {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+
+.winner-badge.badge-a { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+.winner-badge.badge-b { background: rgba(245,158,11,0.15); color: #fcd34d; }
+
+/* BAR CHART */
+.results-bar-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 16px;
+}
+
+.results-bar-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: -0.2px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.bar-row:last-child { margin-bottom: 0; }
+
+.bar-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.bar-label.lbl-a { color: var(--accent); }
+.bar-label.lbl-b { color: var(--compare-b); }
+
+.bar-track {
+  flex: 1;
+  height: 28px;
+  background: var(--surface2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  width: 0%;
+  transition: width 0.7s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.bar-fill-a { background: rgba(99,102,241,0.7); }
+.bar-fill-b { background: rgba(245,158,11,0.7); }
+
+.bar-fill-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.bar-val {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  width: 80px;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* DIFF + BREAKDOWN ROW */
+.results-meta {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.diff-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.diff-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.diff-value {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 6px;
+  color: var(--green);
+}
+
+.diff-sub { font-size: 0.73rem; color: var(--text-dim); }
+
+/* INPUTS DIFF */
+.diff-inputs-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+}
+
+.diff-inputs-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: -0.2px;
+}
+
+.diff-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+
+.diff-table th {
+  text-align: left;
+  padding: 7px 10px;
+  font-size: 0.67rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+}
+
+.diff-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--text-muted);
+}
+
+.diff-table tr:last-child td { border-bottom: none; }
+.diff-table .val-a { color: var(--accent); font-weight: 500; }
+.diff-table .val-b { color: var(--compare-b); font-weight: 500; }
+.diff-table .field-name { color: var(--text); font-weight: 500; }
+
+/* RECOMMENDATION */
+.recommendation-card {
+  background: rgba(99,102,241,0.04);
+  border: 1px solid rgba(99,102,241,0.15);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+}
+
+.recommendation-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.recommendation-text {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+.recommendation-text strong { color: var(--text); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .compare-forms    { grid-template-columns: 1fr; }
+  .compare-divider  { flex-direction: row; padding: 0; height: 40px; }
+  .divider-line     { flex: 1; height: 1px; max-height: none; width: auto; }
+  .shared-grid      { grid-template-columns: 1fr 1fr; }
+  .results-scores   { grid-template-columns: 1fr; }
+  .results-meta     { grid-template-columns: 1fr; }
+  .compare-header,
+  .compare-forms,
+  .shared-fields,
+  .compare-action,
+  .results-section  { padding-left: 20px; padding-right: 20px; }
+}

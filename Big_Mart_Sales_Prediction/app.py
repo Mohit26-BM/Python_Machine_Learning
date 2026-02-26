@@ -1,292 +1,273 @@
-import streamlit as st
-from utils.model import load_model
-from utils.database import init_supabase
-from pages.predict import render as render_predict
-from pages.dashboard import render as render_dashboard
-from pages.history import render as render_history
+from flask import Flask, render_template, request, jsonify
+import joblib
+import numpy as np
+import pandas as pd
+from supabase import create_client
+import os
 
-# ── Page Config ────────────────────────────────────────────────────────────────
-st.set_page_config(
-    page_title="BigMart Sales Predictor",
-    page_icon="🛒",
-    layout="wide",
-    initial_sidebar_state="collapsed",
+app = Flask(__name__)
+
+# Load model
+model = joblib.load("best_model.pkl")
+
+# Explicit ordered feature list matching training — replaces model_columns pickle
+MODEL_FEATURES = [
+    "Item_Weight",
+    "Item_Fat_Content",
+    "Item_Visibility",
+    "Item_Type",
+    "Item_MRP",
+    "Outlet_Identifier",
+    "Outlet_Establishment_Year",
+    "Outlet_Size",
+    "Outlet_Location_Type",
+    "Outlet_Type",
+]
+
+# Supabase client — set these in environment or replace directly
+SUPABASE_URL = os.environ.get(
+    "SUPABASE_URL", "https://yuqvbrllnbtqcdhevdto.supabase.co"
 )
+SUPABASE_KEY = os.environ.get(
+    "SUPABASE_KEY",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1cXZicmxsbmJ0cWNkaGV2ZHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1OTE2NzMsImV4cCI6MjA4NzE2NzY3M30.97JCdF07Fc-YQ2z2RXv3V-9o2C66WLMzydKBY_VGktU",
+)
+sb = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ── Global CSS ─────────────────────────────────────────────────────────────────
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html, body, [data-testid="stAppViewContainer"] {
-    font-family: 'Inter', sans-serif;
-    color: #1F2937;
+# ── Label encoding maps (replicated from training) ──
+ENCODINGS = {
+    "Item_Fat_Content": {
+        "Low Fat": 0,
+        "Regular": 1,
+    },
+    "Item_Type": {
+        "Baking Goods": 0,
+        "Breads": 1,
+        "Breakfast": 2,
+        "Canned": 3,
+        "Dairy": 4,
+        "Frozen Foods": 5,
+        "Fruits and Vegetables": 6,
+        "Hard Drinks": 7,
+        "Health and Hygiene": 8,
+        "Household": 9,
+        "Meat": 10,
+        "Others": 11,
+        "Seafood": 12,
+        "Snack Foods": 13,
+        "Soft Drinks": 14,
+        "Starchy Foods": 15,
+    },
+    "Outlet_Identifier": {
+        "OUT010": 0,
+        "OUT013": 1,
+        "OUT017": 2,
+        "OUT018": 3,
+        "OUT019": 4,
+        "OUT027": 5,
+        "OUT035": 6,
+        "OUT045": 7,
+        "OUT046": 8,
+        "OUT049": 9,
+    },
+    "Outlet_Size": {
+        "High": 0,
+        "Medium": 1,
+        "Small": 2,
+    },
+    "Outlet_Location_Type": {
+        "Tier 1": 0,
+        "Tier 2": 1,
+        "Tier 3": 2,
+    },
+    "Outlet_Type": {
+        "Grocery Store": 0,
+        "Supermarket Type1": 1,
+        "Supermarket Type2": 2,
+        "Supermarket Type3": 3,
+    },
 }
 
-[data-testid="stHeader"] { background: transparent !important; }
-[data-testid="stSidebar"] { display: none !important; }
-.block-container { padding: 0 !important; max-width: 100% !important; }
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
-
-/* ── Brand Header ─────────────────────────────────────────────────── */
-.brand-bar {
-    background: #1E293B;
-    padding: 14px 48px;
-    display: flex;
-    align-items: center;
+# Normalization guards — catch dirty values before encoding lookup
+NORMALIZERS = {
+    "Item_Fat_Content": {
+        "LF": "Low Fat",
+        "low fat": "Low Fat",
+        "reg": "Regular",
+        "REG": "Regular",
+    },
+    "Outlet_Size": {
+        "high": "High",
+        "medium": "Medium",
+        "small": "Small",
+        "": None,  # empty string → None → KeyError caught cleanly
+    },
 }
 
-.brand-title {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #fff;
-    letter-spacing: -0.02em;
-}
 
-.brand-accent { color: #60A5FA; }
+def normalize(field, value):
+    """Apply normalization map for a field if one exists, else return as-is."""
+    if field in NORMALIZERS:
+        return NORMALIZERS[field].get(value, value)
+    return value
 
-/* ── Tabs ─────────────────────────────────────────────────────────── */
-[data-testid="stTabs"] {
-    background: #1E293B !important;
-    padding: 0 48px !important;
-}
 
-button[data-baseweb="tab"] {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.9rem !important;
-    font-weight: 500 !important;
-    color: rgba(255,255,255,0.6) !important;
-    padding: 14px 20px !important;
-    border-bottom: 2px solid transparent !important;
-    background: transparent !important;
-}
+def encode(scenario):
+    """
+    Normalize and label-encode all categorical inputs.
+    Raises KeyError with a clear message if an unknown value is received.
+    """
 
-button[data-baseweb="tab"]:hover {
-    color: #fff !important;
-}
+    def safe_encode(field, raw):
+        val = normalize(field, str(raw).strip() if raw is not None else "")
+        if val is None:
+            raise ValueError(f"Missing value for {field}")
+        if val not in ENCODINGS[field]:
+            raise ValueError(
+                f"Unknown value '{val}' for {field}. "
+                f"Valid options: {list(ENCODINGS[field].keys())}"
+            )
+        return ENCODINGS[field][val]
 
-button[data-baseweb="tab"][aria-selected="true"] {
-    color: #60A5FA !important;
-    border-bottom: 2px solid #60A5FA !important;
-    font-weight: 600 !important;
-}
+    return {
+        "Item_Weight": float(scenario["Item_Weight"]),
+        "Item_Fat_Content": safe_encode(
+            "Item_Fat_Content", scenario.get("Item_Fat_Content")
+        ),
+        "Item_Visibility": float(scenario["Item_Visibility"]),
+        "Item_Type": safe_encode("Item_Type", scenario.get("Item_Type")),
+        "Item_MRP": float(scenario["Item_MRP"]),
+        "Outlet_Identifier": safe_encode(
+            "Outlet_Identifier", scenario.get("Outlet_Identifier")
+        ),
+        "Outlet_Establishment_Year": int(scenario["Outlet_Establishment_Year"]),
+        "Outlet_Size": safe_encode("Outlet_Size", scenario.get("Outlet_Size")),
+        "Outlet_Location_Type": safe_encode(
+            "Outlet_Location_Type", scenario.get("Outlet_Location_Type")
+        ),
+        "Outlet_Type": safe_encode("Outlet_Type", scenario.get("Outlet_Type")),
+    }
 
-[data-testid="stTabPanel"] {
-    padding: 0 !important;
-}
 
-/* ── Shared Page Wrapper ──────────────────────────────────────────── */
-.page-wrapper {
-    padding: 28px 48px 80px;
-    max-width: 1280px;
-    margin: 0 auto;
-}
+def make_prediction(scenario):
+    """Encode inputs and run model prediction."""
+    encoded = encode(scenario)
+    input_df = pd.DataFrame([encoded])[MODEL_FEATURES]
+    return round(float(model.predict(input_df)[0]), 2)
 
-/* ── Shared Typography ────────────────────────────────────────────── */
-.page-title {
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    margin-bottom: 4px;
-}
 
-.page-subtitle {
-    font-size: 0.9rem;
-    font-weight: 400;
-    margin-bottom: 28px;
-}
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-/* ══════════════════════════════════════════════════════════════════
-   PREDICT PAGE COLORS
-══════════════════════════════════════════════════════════════════ */
-.predict-bg { background: #F8FAFC; }
 
-.predict-bg .page-title { color: #1E293B; }
-.predict-bg .page-subtitle { color: #64748B; }
+@app.route("/predict")
+def predict_page():
+    return render_template("predict.html")
 
-.predict-bg label[data-testid="stWidgetLabel"] p {
-    color: #374151 !important;
-    font-size: 0.84rem !important;
-    font-weight: 500 !important;
-}
 
-.predict-bg .section-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #64748B;
-    margin-bottom: 10px;
-}
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
 
-.result-banner {
-    background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
-    border: 1px solid #86EFAC;
-    border-radius: 16px;
-    padding: 32px;
-    text-align: center;
-    margin: 24px 0;
-}
 
-.result-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: #16A34A;
-    margin-bottom: 8px;
-}
+@app.route("/simulator")
+def simulator():
+    return render_template("simulator.html")
 
-.result-value {
-    font-size: 3rem;
-    font-weight: 800;
-    color: #15803D;
-    letter-spacing: -0.03em;
-}
 
-.result-sub {
-    font-size: 0.8rem;
-    color: #6B7280;
-    margin-top: 8px;
-}
+@app.route("/compare")
+def compare():
+    return render_template("compare.html")
 
-/* Predict Button — teal */
-.predict-bg .stButton > button {
-    background: #0D9488 !important;
-    color: #fff !important;
-    border: none !important;
-    border-radius: 10px !important;
-    font-weight: 600 !important;
-    font-size: 0.95rem !important;
-    padding: 12px 28px !important;
-    width: 100% !important;
-    box-shadow: 0 2px 8px rgba(13,148,136,0.3) !important;
-    transition: all 0.2s ease !important;
-}
 
-.predict-bg .stButton > button:hover {
-    background: #0F766E !important;
-    box-shadow: 0 4px 16px rgba(13,148,136,0.4) !important;
-    transform: translateY(-1px) !important;
-}
+@app.route("/insights")
+def insights():
+    return render_template("insights.html")
 
-[data-testid="stInfo"] {
-    background: #F0FDF4 !important;
-    border: 1px solid #86EFAC !important;
-    border-radius: 10px !important;
-}
 
-/* ══════════════════════════════════════════════════════════════════
-   DASHBOARD PAGE COLORS
-══════════════════════════════════════════════════════════════════ */
-.dashboard-bg { background: #F1F5F9; }
+@app.route("/api/predict", methods=["POST"])
+def predict():
+    try:
+        data = request.get_json()
+        prediction = make_prediction(data)
 
-.dashboard-bg .page-title { color: #1E293B; }
-.dashboard-bg .page-subtitle { color: #64748B; }
+        sb.table("bigmart_predictions").insert(
+            {
+                "item_weight": data.get("Item_Weight"),
+                "item_fat_content": data.get("Item_Fat_Content"),
+                "item_visibility": data.get("Item_Visibility"),
+                "item_type": data.get("Item_Type"),
+                "item_mrp": data.get("Item_MRP"),
+                "outlet_identifier": data.get("Outlet_Identifier"),
+                "outlet_year": data.get("Outlet_Establishment_Year"),
+                "outlet_size": data.get("Outlet_Size"),
+                "outlet_location": data.get("Outlet_Location_Type"),
+                "outlet_type": data.get("Outlet_Type"),
+                "predicted_sales": prediction,
+            }
+        ).execute()
 
-.metric-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-    margin-bottom: 24px;
-}
+        return jsonify({"success": True, "prediction": prediction})
 
-.metric-card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    padding: 22px;
-    text-align: center;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
+    except (ValueError, KeyError) as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
-.metric-value {
-    font-size: 1.7rem;
-    font-weight: 800;
-    color: #1E293B;
-    line-height: 1;
-    margin-bottom: 6px;
-}
 
-.metric-label {
-    font-size: 0.76rem;
-    color: #64748B;
-    font-weight: 500;
-}
+@app.route("/api/compare", methods=["POST"])
+def compare_predict():
+    try:
+        data = request.get_json()
+        pred_a = make_prediction(data["a"])
+        pred_b = make_prediction(data["b"])
+        return jsonify({"success": True, "a": pred_a, "b": pred_b})
 
-.dashboard-bg .section-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #64748B;
-    margin-bottom: 10px;
-}
+    except (ValueError, KeyError) as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
-/* ══════════════════════════════════════════════════════════════════
-   HISTORY PAGE COLORS
-══════════════════════════════════════════════════════════════════ */
-.history-bg { background: #F9FAFB; }
 
-.history-bg .page-title { color: #1E293B; }
-.history-bg .page-subtitle { color: #64748B; }
+@app.route("/api/feature-importance")
+def feature_importance():
+    try:
+        importances = model.feature_importances_
+        categoricals = [
+            "Item_Fat_Content",
+            "Item_Type",
+            "Outlet_Size",
+            "Outlet_Location_Type",
+            "Outlet_Type",
+            "Outlet_Identifier",
+        ]
+        groups = {}
+        for col, score in zip(MODEL_FEATURES, importances):
+            parent = None
+            for cat in categoricals:
+                if col.startswith(cat):
+                    parent = cat.replace("_", " ")
+                    break
+            if parent is None:
+                parent = col.replace("_", " ")
+            groups[parent] = groups.get(parent, 0) + float(score)
 
-.history-bg .section-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #64748B;
-    margin-bottom: 10px;
-}
+        sorted_items = sorted(groups.items(), key=lambda x: x[1], reverse=True)
+        total = sum(v for _, v in sorted_items)
+        result = [
+            {
+                "feature": label,
+                "score": round(score, 6),
+                "pct": round(score / total * 100, 1),
+            }
+            for label, score in sorted_items
+        ]
+        return jsonify({"success": True, "data": result})
 
-/* ── Download Button ──────────────────────────────────────────────── */
-.stDownloadButton > button {
-    background: #FFFFFF !important;
-    color: #374151 !important;
-    border: 1px solid #E2E8F0 !important;
-    border-radius: 10px !important;
-    width: 100% !important;
-    font-weight: 500 !important;
-}
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
-.stDownloadButton > button:hover {
-    background: #DBEAFE !important;
-    color: #1E40AF !important;
-    border-color: #BFDBFE !important;
-}
 
-/* ── Caption ──────────────────────────────────────────────────────── */
-[data-testid="stCaptionContainer"] p { color: #9CA3AF !important; }
-
-hr { border-color: #E2E8F0 !important; margin: 16px 0 !important; }
-</style>
-""", unsafe_allow_html=True)
-
-# ── Load Resources ─────────────────────────────────────────────────────────────
-model, model_columns = load_model()
-supabase_client      = init_supabase()
-
-# ── Brand Header ───────────────────────────────────────────────────────────────
-st.markdown("""
-    <div class="brand-bar">
-        <span class="brand-title">Big<span class="brand-accent">Mart</span> Predictor 🛒</span>
-    </div>
-""", unsafe_allow_html=True)
-
-# ── Tabs Navigation ────────────────────────────────────────────────────────────
-tab1, tab2, tab3 = st.tabs(["🔮  Predict", "📊  Dashboard", "📋  History"])
-
-with tab1:
-    render_predict(model, model_columns, supabase_client)
-
-with tab2:
-    render_dashboard(supabase_client)
-
-with tab3:
-    render_history(supabase_client)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

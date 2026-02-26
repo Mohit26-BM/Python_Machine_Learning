@@ -23,7 +23,7 @@ Each project is self-contained and demonstrates a complete ML workflow from data
 | Classification | Loan Approval Prediction with PySpark       |
 | Regression     | [Medical Insurance Cost Prediction](https://insurance-predictor1.onrender.com)|
 | Regression     | House Price Prediction                      |
-| Regression     | [BigMart Sales Prediction](https://big-martsales01.streamlit.app/)|
+| Regression     | [BigMart Sales Prediction](https://bigmartsales-urlm.onrender.com/)|
 | Clustering     | Customer Segmentation (K-Means)             |
 | NLP            | Text Classification using TF-IDF            |
 | Visualization  | Data Analysis & Model Evaluation Dashboards |

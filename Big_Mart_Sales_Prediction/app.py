@@ -4,13 +4,16 @@ import numpy as np
 import pandas as pd
 from supabase import create_client
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # Load model
 model = joblib.load("best_model.pkl")
 
-# Explicit ordered feature list matching training — replaces model_columns pickle
+# Explicit ordered feature list matching training
 MODEL_FEATURES = [
     "Item_Weight",
     "Item_Fat_Content",
@@ -24,14 +27,16 @@ MODEL_FEATURES = [
     "Outlet_Type",
 ]
 
-# Supabase client — set these in environment or replace directly
-SUPABASE_URL = os.environ.get(
-    "SUPABASE_URL", "https://yuqvbrllnbtqcdhevdto.supabase.co"
-)
-SUPABASE_KEY = os.environ.get(
-    "SUPABASE_KEY",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1cXZicmxsbmJ0cWNkaGV2ZHRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE1OTE2NzMsImV4cCI6MjA4NzE2NzY3M30.97JCdF07Fc-YQ2z2RXv3V-9o2C66WLMzydKBY_VGktU",
-)
+# Supabase client — credentials must be set as environment variables
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise RuntimeError(
+        "SUPABASE_URL and SUPABASE_KEY must be set as environment variables. "
+        "Create a .env file locally or set them in your deployment dashboard."
+    )
+
 sb = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ── Label encoding maps (replicated from training) ──
@@ -41,66 +46,37 @@ ENCODINGS = {
         "Regular": 1,
     },
     "Item_Type": {
-        "Baking Goods": 0,
-        "Breads": 1,
-        "Breakfast": 2,
-        "Canned": 3,
-        "Dairy": 4,
-        "Frozen Foods": 5,
-        "Fruits and Vegetables": 6,
-        "Hard Drinks": 7,
-        "Health and Hygiene": 8,
-        "Household": 9,
-        "Meat": 10,
-        "Others": 11,
-        "Seafood": 12,
-        "Snack Foods": 13,
-        "Soft Drinks": 14,
-        "Starchy Foods": 15,
+        "Baking Goods": 0, "Breads": 1, "Breakfast": 2, "Canned": 3,
+        "Dairy": 4, "Frozen Foods": 5, "Fruits and Vegetables": 6,
+        "Hard Drinks": 7, "Health and Hygiene": 8, "Household": 9,
+        "Meat": 10, "Others": 11, "Seafood": 12, "Snack Foods": 13,
+        "Soft Drinks": 14, "Starchy Foods": 15,
     },
     "Outlet_Identifier": {
-        "OUT010": 0,
-        "OUT013": 1,
-        "OUT017": 2,
-        "OUT018": 3,
-        "OUT019": 4,
-        "OUT027": 5,
-        "OUT035": 6,
-        "OUT045": 7,
-        "OUT046": 8,
-        "OUT049": 9,
+        "OUT010": 0, "OUT013": 1, "OUT017": 2, "OUT018": 3, "OUT019": 4,
+        "OUT027": 5, "OUT035": 6, "OUT045": 7, "OUT046": 8, "OUT049": 9,
     },
     "Outlet_Size": {
-        "High": 0,
-        "Medium": 1,
-        "Small": 2,
+        "High": 0, "Medium": 1, "Small": 2,
     },
     "Outlet_Location_Type": {
-        "Tier 1": 0,
-        "Tier 2": 1,
-        "Tier 3": 2,
+        "Tier 1": 0, "Tier 2": 1, "Tier 3": 2,
     },
     "Outlet_Type": {
-        "Grocery Store": 0,
-        "Supermarket Type1": 1,
-        "Supermarket Type2": 2,
-        "Supermarket Type3": 3,
+        "Grocery Store": 0, "Supermarket Type1": 1,
+        "Supermarket Type2": 2, "Supermarket Type3": 3,
     },
 }
 
 # Normalization guards — catch dirty values before encoding lookup
 NORMALIZERS = {
     "Item_Fat_Content": {
-        "LF": "Low Fat",
-        "low fat": "Low Fat",
-        "reg": "Regular",
-        "REG": "Regular",
+        "LF": "Low Fat", "low fat": "Low Fat",
+        "reg": "Regular", "REG": "Regular",
     },
     "Outlet_Size": {
-        "high": "High",
-        "medium": "Medium",
-        "small": "Small",
-        "": None,  # empty string → None → KeyError caught cleanly
+        "high": "High", "medium": "Medium", "small": "Small",
+        "": None,
     },
 }
 
@@ -113,11 +89,7 @@ def normalize(field, value):
 
 
 def encode(scenario):
-    """
-    Normalize and label-encode all categorical inputs.
-    Raises KeyError with a clear message if an unknown value is received.
-    """
-
+    """Normalize and label-encode all categorical inputs."""
     def safe_encode(field, raw):
         val = normalize(field, str(raw).strip() if raw is not None else "")
         if val is None:
@@ -130,28 +102,22 @@ def encode(scenario):
         return ENCODINGS[field][val]
 
     return {
-        "Item_Weight": float(scenario["Item_Weight"]),
-        "Item_Fat_Content": safe_encode(
-            "Item_Fat_Content", scenario.get("Item_Fat_Content")
-        ),
-        "Item_Visibility": float(scenario["Item_Visibility"]),
-        "Item_Type": safe_encode("Item_Type", scenario.get("Item_Type")),
-        "Item_MRP": float(scenario["Item_MRP"]),
-        "Outlet_Identifier": safe_encode(
-            "Outlet_Identifier", scenario.get("Outlet_Identifier")
-        ),
+        "Item_Weight":               float(scenario["Item_Weight"]),
+        "Item_Fat_Content":          safe_encode("Item_Fat_Content", scenario.get("Item_Fat_Content")),
+        "Item_Visibility":           float(scenario["Item_Visibility"]),
+        "Item_Type":                 safe_encode("Item_Type", scenario.get("Item_Type")),
+        "Item_MRP":                  float(scenario["Item_MRP"]),
+        "Outlet_Identifier":         safe_encode("Outlet_Identifier", scenario.get("Outlet_Identifier")),
         "Outlet_Establishment_Year": int(scenario["Outlet_Establishment_Year"]),
-        "Outlet_Size": safe_encode("Outlet_Size", scenario.get("Outlet_Size")),
-        "Outlet_Location_Type": safe_encode(
-            "Outlet_Location_Type", scenario.get("Outlet_Location_Type")
-        ),
-        "Outlet_Type": safe_encode("Outlet_Type", scenario.get("Outlet_Type")),
+        "Outlet_Size":               safe_encode("Outlet_Size", scenario.get("Outlet_Size")),
+        "Outlet_Location_Type":      safe_encode("Outlet_Location_Type", scenario.get("Outlet_Location_Type")),
+        "Outlet_Type":               safe_encode("Outlet_Type", scenario.get("Outlet_Type")),
     }
 
 
 def make_prediction(scenario):
     """Encode inputs and run model prediction."""
-    encoded = encode(scenario)
+    encoded  = encode(scenario)
     input_df = pd.DataFrame([encoded])[MODEL_FEATURES]
     return round(float(model.predict(input_df)[0]), 2)
 
@@ -168,7 +134,11 @@ def predict_page():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template("dashboard.html")
+    return render_template(
+        "dashboard.html",
+        supabase_url=SUPABASE_URL,
+        supabase_key=SUPABASE_KEY,
+    )
 
 
 @app.route("/simulator")
@@ -189,24 +159,22 @@ def insights():
 @app.route("/api/predict", methods=["POST"])
 def predict():
     try:
-        data = request.get_json()
+        data       = request.get_json()
         prediction = make_prediction(data)
 
-        sb.table("bigmart_predictions").insert(
-            {
-                "item_weight": data.get("Item_Weight"),
-                "item_fat_content": data.get("Item_Fat_Content"),
-                "item_visibility": data.get("Item_Visibility"),
-                "item_type": data.get("Item_Type"),
-                "item_mrp": data.get("Item_MRP"),
-                "outlet_identifier": data.get("Outlet_Identifier"),
-                "outlet_year": data.get("Outlet_Establishment_Year"),
-                "outlet_size": data.get("Outlet_Size"),
-                "outlet_location": data.get("Outlet_Location_Type"),
-                "outlet_type": data.get("Outlet_Type"),
-                "predicted_sales": prediction,
-            }
-        ).execute()
+        sb.table("bigmart_predictions").insert({
+            "item_weight":      data.get("Item_Weight"),
+            "item_fat_content": data.get("Item_Fat_Content"),
+            "item_visibility":  data.get("Item_Visibility"),
+            "item_type":        data.get("Item_Type"),
+            "item_mrp":         data.get("Item_MRP"),
+            "outlet_identifier": data.get("Outlet_Identifier"),
+            "outlet_year":      data.get("Outlet_Establishment_Year"),
+            "outlet_size":      data.get("Outlet_Size"),
+            "outlet_location":  data.get("Outlet_Location_Type"),
+            "outlet_type":      data.get("Outlet_Type"),
+            "predicted_sales":  prediction,
+        }).execute()
 
         return jsonify({"success": True, "prediction": prediction})
 
@@ -219,7 +187,7 @@ def predict():
 @app.route("/api/compare", methods=["POST"])
 def compare_predict():
     try:
-        data = request.get_json()
+        data   = request.get_json()
         pred_a = make_prediction(data["a"])
         pred_b = make_prediction(data["b"])
         return jsonify({"success": True, "a": pred_a, "b": pred_b})
@@ -233,14 +201,10 @@ def compare_predict():
 @app.route("/api/feature-importance")
 def feature_importance():
     try:
-        importances = model.feature_importances_
+        importances  = model.feature_importances_
         categoricals = [
-            "Item_Fat_Content",
-            "Item_Type",
-            "Outlet_Size",
-            "Outlet_Location_Type",
-            "Outlet_Type",
-            "Outlet_Identifier",
+            "Item_Fat_Content", "Item_Type", "Outlet_Size",
+            "Outlet_Location_Type", "Outlet_Type", "Outlet_Identifier",
         ]
         groups = {}
         for col, score in zip(MODEL_FEATURES, importances):
@@ -254,13 +218,9 @@ def feature_importance():
             groups[parent] = groups.get(parent, 0) + float(score)
 
         sorted_items = sorted(groups.items(), key=lambda x: x[1], reverse=True)
-        total = sum(v for _, v in sorted_items)
-        result = [
-            {
-                "feature": label,
-                "score": round(score, 6),
-                "pct": round(score / total * 100, 1),
-            }
+        total        = sum(v for _, v in sorted_items)
+        result       = [
+            {"feature": label, "score": round(score, 6), "pct": round(score / total * 100, 1)}
             for label, score in sorted_items
         ]
         return jsonify({"success": True, "data": result})
@@ -270,4 +230,4 @@ def feature_importance():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(debug=os.environ.get("FLASK_DEBUG", "false").lower() == "true")

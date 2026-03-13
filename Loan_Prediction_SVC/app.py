@@ -131,6 +131,16 @@ def dashboard():
         )
         records = response.data
 
+        # Fetch last 15 for history table
+        history_resp = (
+            supabase.table("loan_predictions")
+            .select("*")
+            .order("created_at", desc=True)
+            .limit(15)
+            .execute()
+        )
+        history_rows = history_resp.data
+
         total = len(records)
         approved = sum(1 for r in records if r["prediction"] == "Approved")
         rejected = total - approved
@@ -143,21 +153,18 @@ def dashboard():
             else 0
         )
 
-        # Property area breakdown
         area_counts = {"Urban": 0, "Semiurban": 0, "Rural": 0}
         for r in records:
             a = r["property_area"]
             if a in area_counts:
                 area_counts[a] += 1
 
-        # Education breakdown
         edu_counts = {"Graduate": 0, "Not Graduate": 0}
         for r in records:
             e = r["education"]
             if e in edu_counts:
                 edu_counts[e] += 1
 
-        # Approval by credit history
         good_credit_approved = sum(
             1
             for r in records
@@ -179,7 +186,6 @@ def dashboard():
             if r["credit_history"] == 0.0 and r["prediction"] == "Rejected"
         )
 
-        # Predictions over time (for line chart)
         predictions_timeline = [r["prediction"] for r in records]
 
     except Exception as e:
@@ -191,6 +197,7 @@ def dashboard():
             bad_credit_rejected
         ) = 0
         predictions_timeline = []
+        history_rows = []  # ← fallback added here
 
     return render_template(
         "dashboard.html",
@@ -206,25 +213,73 @@ def dashboard():
         bad_credit_approved=bad_credit_approved,
         bad_credit_rejected=bad_credit_rejected,
         predictions_timeline=predictions_timeline,
+        history_rows=history_rows,  # ← added here
     )
 
 
-@app.route("/history")
-def history():
-    try:
-        response = (
-            supabase.table("loan_predictions")
-            .select("*")
-            .order("created_at", desc=True)
-            .limit(30)
-            .execute()
-        )
-        rows = response.data
-    except Exception as e:
-        print(f"History error: {e}")
-        rows = []
+# ── Add these two routes to app.py before the if __name__ block ───────────────
 
-    return render_template("history.html", rows=rows)
+
+@app.route("/simulate")
+def simulate_page():
+    return render_template("simulate.html")
+
+
+@app.route("/api/simulate", methods=["POST"])
+def simulate():
+    """
+    Same prediction logic as /predict — NO Supabase save.
+    Keeps dashboard analytics clean (only real submissions counted).
+    """
+    try:
+        data = request.json
+
+        input_data = {
+            "Gender": gender_map.get(data.get("gender", "Male"), 1),
+            "Married": married_map.get(data.get("married", "Yes"), 0),
+            "Dependents": int(data.get("dependents", 0)),
+            "Education": education_map.get(data.get("education", "Graduate"), 1),
+            "Self_Employed": self_employed_map.get(data.get("self_employed", "No"), 0),
+            "ApplicantIncome": float(data.get("applicant_income", 0)),
+            "CoapplicantIncome": float(data.get("coapplicant_income", 0)),
+            "LoanAmount": float(data.get("loan_amount", 0)),
+            "Loan_Amount_Term": float(data.get("loan_term", 360)),
+            "Credit_History": float(data.get("credit_history", 1)),
+            "Property_Area": property_map.get(
+                data.get("property_area", "Semiurban"), 1
+            ),
+        }
+
+        input_array = np.array([[input_data[col] for col in model_columns]])
+        prediction = model.predict(input_array)[0]
+        proba = model.predict_proba(input_array)[0]
+        confidence = round(float(max(proba)) * 100, 1)
+        result_label = "Approved" if prediction == 1 else "Rejected"
+
+        return jsonify({"prediction": result_label, "confidence": confidence})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+COEFFICIENTS = {
+    "Gender": 0.3,
+    "Married": 0.657,
+    "Dependents": -0.1148,
+    "Education": 0.4457,
+    "Self_Employed": -0.2078,
+    "ApplicantIncome": 0.0,
+    "CoapplicantIncome": -0.0,
+    "LoanAmount": -0.0035,
+    "Loan_Amount_Term": -0.007,
+    "Credit_History": 2.4715,
+    "Property_Area": 0.1468,
+}
+
+
+@app.route("/insights")
+def insights():
+    return render_template("insights.html", coefficients=COEFFICIENTS)
 
 
 # ── Run ────────────────────────────────────────────────────────────────────────

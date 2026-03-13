@@ -1,0 +1,259 @@
+/*
+  insights.css — LoanIQ Risk & Coefficient Breakdown
+  ====================================================
+  THEME: Light — matches LoanIQ exactly
+  Same variables, fonts, card styles as dashboard/simulate
+
+  LAYOUT:
+  - Full width container matching .dash-container
+  - Diverging bar chart card spans full width
+  - Two highlight cards (approval factors / rejection factors) side by side
+  - Plain-English breakdown cards in a 3-col grid
+  - Model stats card full width at bottom
+
+  DIVERGING BAR CHART:
+  - Built with ApexCharts bar chart, not a custom div approach
+  - Positive coefficients → green (#22c55e)
+  - Negative coefficients → red (#ef4444)
+  - Zero or near-zero → muted grey (#a0d8e6)
+  - Chart is horizontal (bar with horizontal orientation)
+
+  DO NOT:
+  - Use dark theme variables
+  - Use Inter font
+  - Use .nav or .nav-cta classes
+  - Hardcode colors inline in HTML — use CSS classes
+*/
+
+/* ── Highlight cards row ────────────────────────────────────────── */
+.insight-highlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.highlight-card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  padding: 24px;
+}
+
+.highlight-card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.highlight-card-title.approval { color: #16a34a; }
+.highlight-card-title.rejection { color: #dc2626; }
+
+.highlight-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.highlight-item:last-child { border-bottom: none; }
+
+.highlight-feature { color: var(--text); font-weight: 500; }
+
+.highlight-coef {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.88rem;
+}
+
+.highlight-coef.pos { color: #16a34a; }
+.highlight-coef.neg { color: #dc2626; }
+
+.highlight-desc {
+  font-size: 0.75rem;
+  color: var(--soft);
+  margin-top: 3px;
+}
+
+/* ── Chart card ─────────────────────────────────────────────────── */
+.insight-chart-card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.insight-chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.insight-chart-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+
+.insight-chart-sub {
+  font-size: 0.82rem;
+  color: var(--soft);
+}
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: var(--soft);
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+/* ── Feature breakdown grid ──────────────────────────────────────── */
+.breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.breakdown-card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+  border-top: 3px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.breakdown-card.positive { border-top-color: #22c55e; }
+.breakdown-card.negative { border-top-color: #ef4444; }
+.breakdown-card.neutral  { border-top-color: #a0d8e6; }
+
+.breakdown-feature {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--soft);
+  margin-bottom: 6px;
+}
+
+.breakdown-coef {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.breakdown-coef.pos { color: #16a34a; }
+.breakdown-coef.neg { color: #dc2626; }
+.breakdown-coef.neu { color: #a0d8e6; }
+
+.breakdown-direction {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+  margin-bottom: 10px;
+}
+
+.breakdown-direction.pos { background: #dcfce7; color: #16a34a; }
+.breakdown-direction.neg { background: #fee2e2; color: #dc2626; }
+.breakdown-direction.neu { background: #e8eef5; color: var(--soft); }
+
+.breakdown-text {
+  font-size: 0.8rem;
+  color: var(--soft);
+  line-height: 1.55;
+}
+
+/* ── Model stats card ───────────────────────────────────────────── */
+.model-stats-card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
+  padding: 28px;
+  margin-bottom: 40px;
+}
+
+.model-stats-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  color: var(--dark);
+  margin-bottom: 20px;
+}
+
+.model-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+.model-stat {
+  text-align: center;
+  padding: 16px 8px;
+  background: var(--bg);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.model-stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--dark);
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+}
+
+.model-stat-label {
+  font-size: 0.72rem;
+  color: var(--soft);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Explainer note ─────────────────────────────────────────────── */
+.explainer-note {
+  background: #e0e7ff;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  font-size: 0.83rem;
+  color: #3730a3;
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+
+.explainer-note strong { font-weight: 600; }
+
+@media (max-width: 900px) {
+  .insight-highlights  { grid-template-columns: 1fr; }
+  .breakdown-grid      { grid-template-columns: 1fr 1fr; }
+  .model-stats-grid    { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .breakdown-grid   { grid-template-columns: 1fr; }
+  .model-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}

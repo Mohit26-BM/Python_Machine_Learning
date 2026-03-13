@@ -1,14 +1,16 @@
 const modal = document.getElementById("resultModal");
-const modalContent = document.getElementById("modalContent");
+const modalClose = document.querySelector(".modal-close");
 
-// Close modal
-document.querySelector(".modal-close").onclick = () =>
-  (modal.style.display = "none");
-window.onclick = (e) => {
-  if (e.target === modal) modal.style.display = "none";
-};
+if (modal && modalClose) {
+  modalClose.onclick = () => (modal.style.display = "none");
+  window.onclick = (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  };
+}
 
-document.getElementById("loanForm").addEventListener("submit", async (e) => {
+const loanForm = document.getElementById("loanForm");
+if (loanForm) {
+  loanForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const errorMsg = document.getElementById("errorMsg");
@@ -79,7 +81,13 @@ document.getElementById("loanForm").addEventListener("submit", async (e) => {
     const confidence = result.confidence;
 
     modalContent.innerHTML = `
-      <div class="result-icon">${approved ? "✅" : "❌"}</div>
+      <div class="result-icon">
+        ${
+          approved
+            ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.5 2.5L16 9.5"></path></svg>`
+            : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9 9l6 6"></path><path d="M15 9l-6 6"></path></svg>`
+        }
+      </div>
       <div class="result-title ${approved ? "result-approved" : "result-rejected"}">
         ${result.prediction}
       </div>
@@ -114,4 +122,40 @@ document.getElementById("loanForm").addEventListener("submit", async (e) => {
     errorMsg.textContent = "Something went wrong. Please try again.";
     errorMsg.style.display = "block";
   }
-});
+  });
+}
+
+function animateCounter(el, target, duration = 1500, suffix = "") {
+  const start = performance.now();
+  const isDecimal = target % 1 !== 0;
+
+  const tick = (now) => {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+    const current = eased * target;
+    el.textContent =
+      (isDecimal ? current.toFixed(2) : Math.floor(current)) + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+// Trigger when stat cards scroll into view
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      observer.unobserve(entry.target);
+
+      const el = entry.target.querySelector(".stat-value");
+      const raw = el.dataset.target;
+      const suffix = el.dataset.suffix || "";
+      animateCounter(el, parseFloat(raw), 1500, suffix);
+    });
+  },
+  { threshold: 0.3 },
+);
+
+document
+  .querySelectorAll(".stat-card")
+  .forEach((card) => observer.observe(card));

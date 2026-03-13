@@ -47,6 +47,15 @@ body {
   font-size: 1.3rem;
   color: var(--dark);
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--accent);
 }
 
 .btn-nav {
@@ -267,8 +276,15 @@ body {
 }
 
 .feature-icon {
-  font-size: 1.8rem;
+  width: 44px;
+  height: 44px;
+  background: #e0e7ff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 14px;
+  color: var(--accent);
 }
 
 .feature-card h3 {
@@ -324,8 +340,17 @@ body {
 .best-row td:first-child { border-left: 3px solid var(--primary); }
 
 .model-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 600;
   color: var(--dark);
+}
+
+.badge-icon {
+  width: 14px;
+  height: 14px;
+  color: #f59e0b;
 }
 
 /* ── Confusion Matrix ─────────────────────────────────────────────── */
@@ -605,7 +630,17 @@ body {
 
 .modal-close:hover { color: var(--dark); }
 
-.result-icon { font-size: 3rem; margin-bottom: 12px; }
+.result-icon {
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-icon svg {
+  width: 52px;
+  height: 52px;
+}
 
 .result-title {
   font-family: 'DM Serif Display', serif;
@@ -744,6 +779,11 @@ body {
   justify-content: center;
   font-size: 1.2rem;
   flex-shrink: 0;
+}
+
+.kpi-icon svg {
+  width: 22px;
+  height: 22px;
 }
 
 .kpi-value {
@@ -889,4 +929,24 @@ body {
   .kpi-grid  { grid-template-columns: 1fr 1fr; }
   .chart-row { grid-template-columns: 1fr; }
   .dash-header { flex-direction: column; gap: 16px; }
+}
+
+.insights-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  color: var(--soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.insights-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }

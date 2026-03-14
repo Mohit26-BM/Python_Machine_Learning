@@ -1,251 +1,284 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LoanIQ — Risk Insights</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/insights.css') }}">
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-</head>
-<body class="dash-body">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>LoanIQ — Risk Insights</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/insights.css') }}" />
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    </head>
+    <body class="dash-body">
+        <nav class="navbar">
+            <div class="nav-inner">
+                <a href="/" class="nav-brand">
+                    <img
+                        src="{{ url_for('static', filename='favicon.ico') }}"
+                        style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle"
+                    />
+                    LoanIQ
+                </a>
+                <div class="nav-links">
+                    <a href="/predict" class="nav-pill">Predict</a>
+                    <a href="/simulate" class="nav-pill">Simulator</a>
+                    <a href="/insights" class="nav-pill active">Insights</a>
+                    <a href="/dashboard" class="nav-pill">Dashboard</a>
+                </div>
+            </div>
+        </nav>
 
-  <nav class="navbar">
-    <div class="nav-inner">
-      <a href="/" class="nav-brand">
-        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-          <path d="M4 10h16"/>
-          <path d="M4 10V8l8-4 8 4v2"/>
-          <path d="M6 10v8"/>
-          <path d="M10 10v8"/>
-          <path d="M14 10v8"/>
-          <path d="M18 10v8"/>
-          <path d="M3 18h18"/>
-          <path d="M2 21h20"/>
-        </svg>
-        LoanIQ
-      </a>
-      <div class="nav-links">
-        <a href="/predict"   class="nav-pill">Predict</a>
-        <a href="/simulate"  class="nav-pill">Simulator</a>
-        <a href="/insights"  class="nav-pill active">Insights</a>
-        <a href="/dashboard" class="nav-pill">Dashboard</a>
-      </div>
-    </div>
-  </nav>
+        <div class="dash-container">
+            <div class="dash-header">
+                <div>
+                    <h1 class="dash-title">Risk <span class="title-accent">Insights</span></h1>
+                    <p class="dash-sub">What the model learned — feature coefficients and their effect on approval</p>
+                </div>
+                <a href="/predict" class="btn-nav">New Prediction →</a>
+            </div>
 
-  <div class="dash-container">
+            <!-- Explainer note -->
+            <div class="explainer-note">
+                <strong>How to read this page:</strong> Logistic Regression assigns a coefficient to each feature. A
+                <strong>positive coefficient</strong> means higher values push the prediction toward
+                <strong>Approved</strong>. A <strong>negative coefficient</strong> pushes toward
+                <strong>Rejected</strong>. The larger the absolute value, the stronger the effect. Credit History
+                dominates at 2.47 — nearly 4× stronger than the next feature.
+            </div>
 
-    <div class="dash-header">
-      <div>
-        <h1 class="dash-title">Risk <span class="title-accent">Insights</span></h1>
-        <p class="dash-sub">What the model learned — feature coefficients and their effect on approval</p>
-      </div>
-      <a href="/predict" class="btn-nav">New Prediction →</a>
-    </div>
+            <!-- Highlight cards — top approval vs top rejection factors -->
+            <div class="insight-highlights">
+                <div class="highlight-card">
+                    <div class="highlight-card-title approval">✓ Top Approval Factors</div>
 
-    <!-- Explainer note -->
-    <div class="explainer-note">
-      <strong>How to read this page:</strong> Logistic Regression assigns a coefficient to each feature.
-      A <strong>positive coefficient</strong> means higher values push the prediction toward
-      <strong>Approved</strong>. A <strong>negative coefficient</strong> pushes toward
-      <strong>Rejected</strong>. The larger the absolute value, the stronger the effect.
-      Credit History dominates at 2.47 — nearly 4× stronger than the next feature.
-    </div>
+                    <div class="highlight-item">
+                        <div>
+                            <div class="highlight-feature">Credit History</div>
+                            <div class="highlight-desc">
+                                Good credit history is by far the strongest signal for approval
+                            </div>
+                        </div>
+                        <span class="highlight-coef pos">+2.4715</span>
+                    </div>
 
-    <!-- Highlight cards — top approval vs top rejection factors -->
-    <div class="insight-highlights">
+                    <div class="highlight-item">
+                        <div>
+                            <div class="highlight-feature">Married</div>
+                            <div class="highlight-desc">
+                                Married applicants are statistically more likely to be approved
+                            </div>
+                        </div>
+                        <span class="highlight-coef pos">+0.6570</span>
+                    </div>
 
-      <div class="highlight-card">
-        <div class="highlight-card-title approval">✓ Top Approval Factors</div>
+                    <div class="highlight-item">
+                        <div>
+                            <div class="highlight-feature">Education</div>
+                            <div class="highlight-desc">
+                                Graduates have a higher approval probability in the training data
+                            </div>
+                        </div>
+                        <span class="highlight-coef pos">+0.4457</span>
+                    </div>
+                </div>
 
-        <div class="highlight-item">
-          <div>
-            <div class="highlight-feature">Credit History</div>
-            <div class="highlight-desc">Good credit history is by far the strongest signal for approval</div>
-          </div>
-          <span class="highlight-coef pos">+2.4715</span>
+                <div class="highlight-card">
+                    <div class="highlight-card-title rejection">✗ Top Rejection Factors</div>
+
+                    <div class="highlight-item">
+                        <div>
+                            <div class="highlight-feature">Self Employed</div>
+                            <div class="highlight-desc">
+                                Self-employed applicants show higher rejection rates in training data
+                            </div>
+                        </div>
+                        <span class="highlight-coef neg">−0.2078</span>
+                    </div>
+
+                    <div class="highlight-item">
+                        <div>
+                            <div class="highlight-feature">Dependents</div>
+                            <div class="highlight-desc">More dependents slightly increases rejection probability</div>
+                        </div>
+                        <span class="highlight-coef neg">−0.1148</span>
+                    </div>
+
+                    <div class="highlight-item">
+                        <div>
+                            <div class="highlight-feature">Loan Term</div>
+                            <div class="highlight-desc">Longer loan terms marginally reduce approval probability</div>
+                        </div>
+                        <span class="highlight-coef neg">−0.0070</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diverging bar chart -->
+            <div class="insight-chart-card">
+                <div class="insight-chart-header">
+                    <div>
+                        <div class="insight-chart-title">Feature Coefficients</div>
+                        <div class="insight-chart-sub">
+                            Sorted by absolute value — shows direction and magnitude of each feature's influence
+                        </div>
+                    </div>
+                    <div class="chart-legend">
+                        <span><span class="legend-dot" style="background: #22c55e"></span>Pushes Approved</span>
+                        <span><span class="legend-dot" style="background: #ef4444"></span>Pushes Rejected</span>
+                        <span><span class="legend-dot" style="background: #a0d8e6"></span>Negligible</span>
+                    </div>
+                </div>
+                <div id="coeffChart"></div>
+            </div>
+
+            <!-- Per-feature breakdown cards -->
+            <div class="breakdown-grid">
+                <div class="breakdown-card positive">
+                    <div class="breakdown-feature">Credit History</div>
+                    <div class="breakdown-coef pos">+2.4715</div>
+                    <span class="breakdown-direction pos">↑ Approval</span>
+                    <div class="breakdown-text">
+                        The single most powerful feature. An applicant with good credit history (1) is dramatically more
+                        likely to be approved. Bad credit (0) is the fastest path to rejection.
+                    </div>
+                </div>
+
+                <div class="breakdown-card positive">
+                    <div class="breakdown-feature">Married</div>
+                    <div class="breakdown-coef pos">+0.6570</div>
+                    <span class="breakdown-direction pos">↑ Approval</span>
+                    <div class="breakdown-text">
+                        Married applicants in the training data had higher approval rates — likely correlated with dual
+                        income or financial stability signals.
+                    </div>
+                </div>
+
+                <div class="breakdown-card positive">
+                    <div class="breakdown-feature">Education</div>
+                    <div class="breakdown-coef pos">+0.4457</div>
+                    <span class="breakdown-direction pos">↑ Approval</span>
+                    <div class="breakdown-text">
+                        Graduates are more likely to be approved. Education level acts as a proxy for income stability
+                        and repayment capacity in this dataset.
+                    </div>
+                </div>
+
+                <div class="breakdown-card positive">
+                    <div class="breakdown-feature">Gender</div>
+                    <div class="breakdown-coef pos">+0.3000</div>
+                    <span class="breakdown-direction pos">↑ Approval</span>
+                    <div class="breakdown-text">
+                        Male applicants (encoded as 1) have a slight positive coefficient. This reflects the dataset
+                        distribution rather than a deliberate lending policy.
+                    </div>
+                </div>
+
+                <div class="breakdown-card positive">
+                    <div class="breakdown-feature">Property Area</div>
+                    <div class="breakdown-coef pos">+0.1468</div>
+                    <span class="breakdown-direction pos">↑ Approval</span>
+                    <div class="breakdown-text">
+                        Semiurban (1) and Urban (2) properties have higher approval rates than Rural (0). Urban areas
+                        carry lower perceived lending risk in this dataset.
+                    </div>
+                </div>
+
+                <div class="breakdown-card negative">
+                    <div class="breakdown-feature">Self Employed</div>
+                    <div class="breakdown-coef neg">−0.2078</div>
+                    <span class="breakdown-direction neg">↓ Rejection</span>
+                    <div class="breakdown-text">
+                        Self-employed applicants have a negative coefficient — irregular income streams are associated
+                        with slightly higher rejection rates in the training data.
+                    </div>
+                </div>
+
+                <div class="breakdown-card negative">
+                    <div class="breakdown-feature">Dependents</div>
+                    <div class="breakdown-coef neg">−0.1148</div>
+                    <span class="breakdown-direction neg">↓ Rejection</span>
+                    <div class="breakdown-text">
+                        Each additional dependent slightly reduces approval probability — more dependents imply higher
+                        financial obligations and lower disposable income.
+                    </div>
+                </div>
+
+                <div class="breakdown-card negative">
+                    <div class="breakdown-feature">Loan Amount</div>
+                    <div class="breakdown-coef neg">−0.0035</div>
+                    <span class="breakdown-direction neg">↓ Rejection</span>
+                    <div class="breakdown-text">
+                        Higher loan amounts marginally reduce approval probability. The effect is very small — amount
+                        alone rarely determines outcome without context.
+                    </div>
+                </div>
+
+                <div class="breakdown-card negative">
+                    <div class="breakdown-feature">Loan Term</div>
+                    <div class="breakdown-coef neg">−0.0070</div>
+                    <span class="breakdown-direction neg">↓ Rejection</span>
+                    <div class="breakdown-text">
+                        Longer repayment terms have a slight negative effect. This is a near-negligible signal — the
+                        model barely differentiates on term length.
+                    </div>
+                </div>
+
+                <div class="breakdown-card neutral">
+                    <div class="breakdown-feature">Applicant Income</div>
+                    <div class="breakdown-coef neu">~0.0000</div>
+                    <span class="breakdown-direction neu">→ Negligible</span>
+                    <div class="breakdown-text">
+                        Applicant income has essentially zero coefficient after scaling. Income alone doesn't predict
+                        approval — the model relies on other features entirely.
+                    </div>
+                </div>
+
+                <div class="breakdown-card neutral">
+                    <div class="breakdown-feature">Co-applicant Income</div>
+                    <div class="breakdown-coef neu">~0.0000</div>
+                    <span class="breakdown-direction neu">→ Negligible</span>
+                    <div class="breakdown-text">
+                        Co-applicant income similarly has near-zero influence. This is a known characteristic of the
+                        dataset — income features have low predictive power here.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model stats -->
+            <div class="model-stats-card">
+                <div class="model-stats-title">Model Performance — Logistic Regression</div>
+                <div class="model-stats-grid">
+                    <div class="model-stat">
+                        <div class="model-stat-value">85.42%</div>
+                        <div class="model-stat-label">Accuracy</div>
+                    </div>
+                    <div class="model-stat">
+                        <div class="model-stat-value">0.8522</div>
+                        <div class="model-stat-label">Precision</div>
+                    </div>
+                    <div class="model-stat">
+                        <div class="model-stat-value">0.8542</div>
+                        <div class="model-stat-label">Recall</div>
+                    </div>
+                    <div class="model-stat">
+                        <div class="model-stat-value">0.8527</div>
+                        <div class="model-stat-label">F1 Score</div>
+                    </div>
+                    <div class="model-stat">
+                        <div class="model-stat-value">480</div>
+                        <div class="model-stat-label">Training Records</div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="highlight-item">
-          <div>
-            <div class="highlight-feature">Married</div>
-            <div class="highlight-desc">Married applicants are statistically more likely to be approved</div>
-          </div>
-          <span class="highlight-coef pos">+0.6570</span>
-        </div>
-
-        <div class="highlight-item">
-          <div>
-            <div class="highlight-feature">Education</div>
-            <div class="highlight-desc">Graduates have a higher approval probability in the training data</div>
-          </div>
-          <span class="highlight-coef pos">+0.4457</span>
-        </div>
-
-      </div>
-
-      <div class="highlight-card">
-        <div class="highlight-card-title rejection">✗ Top Rejection Factors</div>
-
-        <div class="highlight-item">
-          <div>
-            <div class="highlight-feature">Self Employed</div>
-            <div class="highlight-desc">Self-employed applicants show higher rejection rates in training data</div>
-          </div>
-          <span class="highlight-coef neg">−0.2078</span>
-        </div>
-
-        <div class="highlight-item">
-          <div>
-            <div class="highlight-feature">Dependents</div>
-            <div class="highlight-desc">More dependents slightly increases rejection probability</div>
-          </div>
-          <span class="highlight-coef neg">−0.1148</span>
-        </div>
-
-        <div class="highlight-item">
-          <div>
-            <div class="highlight-feature">Loan Term</div>
-            <div class="highlight-desc">Longer loan terms marginally reduce approval probability</div>
-          </div>
-          <span class="highlight-coef neg">−0.0070</span>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Diverging bar chart -->
-    <div class="insight-chart-card">
-      <div class="insight-chart-header">
-        <div>
-          <div class="insight-chart-title">Feature Coefficients</div>
-          <div class="insight-chart-sub">Sorted by absolute value — shows direction and magnitude of each feature's influence</div>
-        </div>
-        <div class="chart-legend">
-          <span><span class="legend-dot" style="background:#22c55e"></span>Pushes Approved</span>
-          <span><span class="legend-dot" style="background:#ef4444"></span>Pushes Rejected</span>
-          <span><span class="legend-dot" style="background:#a0d8e6"></span>Negligible</span>
-        </div>
-      </div>
-      <div id="coeffChart"></div>
-    </div>
-
-    <!-- Per-feature breakdown cards -->
-    <div class="breakdown-grid">
-
-      <div class="breakdown-card positive">
-        <div class="breakdown-feature">Credit History</div>
-        <div class="breakdown-coef pos">+2.4715</div>
-        <span class="breakdown-direction pos">↑ Approval</span>
-        <div class="breakdown-text">The single most powerful feature. An applicant with good credit history (1) is dramatically more likely to be approved. Bad credit (0) is the fastest path to rejection.</div>
-      </div>
-
-      <div class="breakdown-card positive">
-        <div class="breakdown-feature">Married</div>
-        <div class="breakdown-coef pos">+0.6570</div>
-        <span class="breakdown-direction pos">↑ Approval</span>
-        <div class="breakdown-text">Married applicants in the training data had higher approval rates — likely correlated with dual income or financial stability signals.</div>
-      </div>
-
-      <div class="breakdown-card positive">
-        <div class="breakdown-feature">Education</div>
-        <div class="breakdown-coef pos">+0.4457</div>
-        <span class="breakdown-direction pos">↑ Approval</span>
-        <div class="breakdown-text">Graduates are more likely to be approved. Education level acts as a proxy for income stability and repayment capacity in this dataset.</div>
-      </div>
-
-      <div class="breakdown-card positive">
-        <div class="breakdown-feature">Gender</div>
-        <div class="breakdown-coef pos">+0.3000</div>
-        <span class="breakdown-direction pos">↑ Approval</span>
-        <div class="breakdown-text">Male applicants (encoded as 1) have a slight positive coefficient. This reflects the dataset distribution rather than a deliberate lending policy.</div>
-      </div>
-
-      <div class="breakdown-card positive">
-        <div class="breakdown-feature">Property Area</div>
-        <div class="breakdown-coef pos">+0.1468</div>
-        <span class="breakdown-direction pos">↑ Approval</span>
-        <div class="breakdown-text">Semiurban (1) and Urban (2) properties have higher approval rates than Rural (0). Urban areas carry lower perceived lending risk in this dataset.</div>
-      </div>
-
-      <div class="breakdown-card negative">
-        <div class="breakdown-feature">Self Employed</div>
-        <div class="breakdown-coef neg">−0.2078</div>
-        <span class="breakdown-direction neg">↓ Rejection</span>
-        <div class="breakdown-text">Self-employed applicants have a negative coefficient — irregular income streams are associated with slightly higher rejection rates in the training data.</div>
-      </div>
-
-      <div class="breakdown-card negative">
-        <div class="breakdown-feature">Dependents</div>
-        <div class="breakdown-coef neg">−0.1148</div>
-        <span class="breakdown-direction neg">↓ Rejection</span>
-        <div class="breakdown-text">Each additional dependent slightly reduces approval probability — more dependents imply higher financial obligations and lower disposable income.</div>
-      </div>
-
-      <div class="breakdown-card negative">
-        <div class="breakdown-feature">Loan Amount</div>
-        <div class="breakdown-coef neg">−0.0035</div>
-        <span class="breakdown-direction neg">↓ Rejection</span>
-        <div class="breakdown-text">Higher loan amounts marginally reduce approval probability. The effect is very small — amount alone rarely determines outcome without context.</div>
-      </div>
-
-      <div class="breakdown-card negative">
-        <div class="breakdown-feature">Loan Term</div>
-        <div class="breakdown-coef neg">−0.0070</div>
-        <span class="breakdown-direction neg">↓ Rejection</span>
-        <div class="breakdown-text">Longer repayment terms have a slight negative effect. This is a near-negligible signal — the model barely differentiates on term length.</div>
-      </div>
-
-      <div class="breakdown-card neutral">
-        <div class="breakdown-feature">Applicant Income</div>
-        <div class="breakdown-coef neu">~0.0000</div>
-        <span class="breakdown-direction neu">→ Negligible</span>
-        <div class="breakdown-text">Applicant income has essentially zero coefficient after scaling. Income alone doesn't predict approval — the model relies on other features entirely.</div>
-      </div>
-
-      <div class="breakdown-card neutral">
-        <div class="breakdown-feature">Co-applicant Income</div>
-        <div class="breakdown-coef neu">~0.0000</div>
-        <span class="breakdown-direction neu">→ Negligible</span>
-        <div class="breakdown-text">Co-applicant income similarly has near-zero influence. This is a known characteristic of the dataset — income features have low predictive power here.</div>
-      </div>
-
-    </div>
-
-    <!-- Model stats -->
-    <div class="model-stats-card">
-      <div class="model-stats-title">Model Performance — Logistic Regression</div>
-      <div class="model-stats-grid">
-        <div class="model-stat">
-          <div class="model-stat-value">85.42%</div>
-          <div class="model-stat-label">Accuracy</div>
-        </div>
-        <div class="model-stat">
-          <div class="model-stat-value">0.8522</div>
-          <div class="model-stat-label">Precision</div>
-        </div>
-        <div class="model-stat">
-          <div class="model-stat-value">0.8542</div>
-          <div class="model-stat-label">Recall</div>
-        </div>
-        <div class="model-stat">
-          <div class="model-stat-value">0.8527</div>
-          <div class="model-stat-label">F1 Score</div>
-        </div>
-        <div class="model-stat">
-          <div class="model-stat-value">480</div>
-          <div class="model-stat-label">Training Records</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  <script>
-    window.COEFFICIENTS = JSON.parse('{{ coefficients | tojson | safe }}');
-  </script>
-  <script src="{{ url_for('static', filename='js/insights.js') }}"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script>
+            window.COEFFICIENTS = JSON.parse("{{ coefficients | tojson | safe }}");
+        </script>
+        <script src="{{ url_for('static', filename='js/insights.js') }}"></script>
+    </body>
 </html>

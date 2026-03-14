@@ -1,168 +1,182 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>LoanIQ — Applicant Simulator</title>
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/simulate.css') }}">
-      <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-   </head>
-   <body class="dash-body">
-      <!-- Navbar — matches dashboard.html exactly -->
-      <nav class="navbar">
-         <div class="nav-inner">
-            <a href="/" class="nav-brand">LoanIQ</a>
-            <div class="nav-links">
-               <a href="/predict"   class="nav-pill">Predict</a>
-               <a href="/simulate"  class="nav-pill active">Simulator</a>
-               <a href="/dashboard" class="nav-pill">Dashboard</a>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>LoanIQ — Applicant Simulator</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/simulate.css') }}" />
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    </head>
+    <body class="dash-body">
+        <!-- Navbar — matches dashboard.html exactly -->
+        <nav class="navbar">
+            <div class="nav-inner">
+                <a href="/" class="nav-brand">
+                    <img
+                        src="{{ url_for('static', filename='favicon.ico') }}"
+                        style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle"
+                    />
+                    LoanIQ
+                </a>
+                <div class="nav-links">
+                    <a href="/predict" class="nav-pill">Predict</a>
+                    <a href="/simulate" class="nav-pill active">Simulator</a>
+                    <a href="/dashboard" class="nav-pill">Dashboard</a>
+                </div>
             </div>
-         </div>
-      </nav>
-      <div class="sim-container">
-         <div class="sim-header">
-            <div class="sim-header-left">
-               <h1>Applicant Simulator</h1>
-               <p>Adjust any field and see the approval prediction update instantly. Try toggling Credit History — it has the strongest effect on the model.</p>
+        </nav>
+        <div class="sim-container">
+            <div class="sim-header">
+                <div class="sim-header-left">
+                    <h1>Applicant Simulator</h1>
+                    <p>
+                        Adjust any field and see the approval prediction update instantly. Try toggling Credit History —
+                        it has the strongest effect on the model.
+                    </p>
+                </div>
+                <div class="sim-live">
+                    <span class="sim-live-dot" id="liveDot"></span>
+                    Live prediction
+                </div>
             </div>
-            <div class="sim-live">
-               <span class="sim-live-dot" id="liveDot"></span>
-               Live prediction
+            <div class="sim-body">
+                <!-- LEFT: form controls -->
+                <div class="sim-form-card">
+                    <div class="sim-section-label">Personal Information</div>
+                    <div class="sim-grid-3">
+                        <div class="sim-field">
+                            <label>Gender</label>
+                            <select id="gender" title="Select applicant gender">
+                                <option value="Male" selected>Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="sim-field">
+                            <label>Married</label>
+                            <select id="married" title="Select marital status">
+                                <option value="Yes" selected>Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        <div class="sim-field">
+                            <label>Dependents</label>
+                            <select id="dependents" title="Select number of dependents">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="4">3+</option>
+                            </select>
+                        </div>
+                        <div class="sim-field">
+                            <label>Education</label>
+                            <select id="education" title="Select education level">
+                                <option value="Graduate" selected>Graduate</option>
+                                <option value="Not Graduate">Not Graduate</option>
+                            </select>
+                        </div>
+                        <div class="sim-field">
+                            <label>Self Employed</label>
+                            <select id="self_employed" title="Select employment status">
+                                <option value="No" selected>No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="sim-field">
+                            <label>Property Area</label>
+                            <select id="property_area" title="Select property area">
+                                <option value="Semiurban" selected>Semiurban</option>
+                                <option value="Urban">Urban</option>
+                                <option value="Rural">Rural</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="sim-section-label">Financial Details</div>
+                    <div class="sim-grid-2">
+                        <div class="sim-field">
+                            <label>Applicant Income (₹)</label>
+                            <input type="number" id="applicant_income" placeholder="e.g. 5000" min="1" value="5000" />
+                        </div>
+                        <div class="sim-field">
+                            <label>Co-applicant Income (₹)</label>
+                            <input type="number" id="coapplicant_income" placeholder="e.g. 0" min="0" value="0" />
+                        </div>
+                        <div class="sim-field">
+                            <label>Loan Amount (₹ thousands)</label>
+                            <input type="number" id="loan_amount" placeholder="e.g. 128" min="1" value="128" />
+                        </div>
+                        <div class="sim-field">
+                            <label>Loan Term (months)</label>
+                            <select id="loan_term" title="Select loan term in months">
+                                <option value="12">12</option>
+                                <option value="36">36</option>
+                                <option value="60">60</option>
+                                <option value="84">84</option>
+                                <option value="120">120</option>
+                                <option value="180">180</option>
+                                <option value="240">240</option>
+                                <option value="300">300</option>
+                                <option value="360" selected>360</option>
+                                <option value="480">480</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="sim-section-label">Credit History</div>
+                    <p class="credit-hint">
+                        Credit history is the single strongest predictor — toggle it to see the biggest swing.
+                    </p>
+                    <div class="credit-toggle">
+                        <input type="radio" name="creditHistory" id="creditGood" value="1" checked />
+                        <label for="creditGood">✓ Good (1)</label>
+                        <input type="radio" name="creditHistory" id="creditBad" value="0" />
+                        <label for="creditBad">✗ Bad (0)</label>
+                    </div>
+                </div>
+                <!-- RIGHT: result panel -->
+                <div class="sim-result">
+                    <div class="result-verdict" id="resultVerdict">
+                        <div class="verdict-label">Prediction</div>
+                        <div class="verdict-badge" id="verdictBadge">—</div>
+                        <div class="conf-row">
+                            <span class="conf-label">Confidence</span>
+                            <span class="conf-value" id="confValue">—</span>
+                        </div>
+                        <div class="conf-track">
+                            <div class="conf-fill" id="confFill"></div>
+                        </div>
+                    </div>
+                    <div class="result-spark">
+                        <div class="spark-title">Last 20 predictions</div>
+                        <div id="sparklineChart"></div>
+                    </div>
+                    <div class="result-summary">
+                        <div class="summary-title">Key Inputs</div>
+                        <div class="summary-row">
+                            <span class="summary-key">Credit History</span>
+                            <span class="summary-val" id="summCredit">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-key">Applicant Income</span>
+                            <span class="summary-val" id="summIncome">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-key">Loan Amount</span>
+                            <span class="summary-val" id="summLoan">—</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-key">Property Area</span>
+                            <span class="summary-val" id="summArea">—</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-         </div>
-         <div class="sim-body">
-            <!-- LEFT: form controls -->
-            <div class="sim-form-card">
-               <div class="sim-section-label">Personal Information</div>
-               <div class="sim-grid-3">
-                  <div class="sim-field">
-                     <label>Gender</label>
-                     <select id="gender" title="Select applicant gender">
-                        <option value="Male" selected>Male</option>
-                        <option value="Female">Female</option>
-                     </select>
-                  </div>
-                  <div class="sim-field">
-                     <label>Married</label>
-                     <select id="married" title="Select marital status">
-                        <option value="Yes" selected>Yes</option>
-                        <option value="No">No</option>
-                     </select>
-                  </div>
-                  <div class="sim-field">
-                     <label>Dependents</label>
-                     <select id="dependents" title="Select number of dependents">
-                        <option value="0" selected>0</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="4">3+</option>
-                     </select>
-                  </div>
-                  <div class="sim-field">
-                     <label>Education</label>
-                     <select id="education" title="Select education level">
-                        <option value="Graduate" selected>Graduate</option>
-                        <option value="Not Graduate">Not Graduate</option>
-                     </select>
-                  </div>
-                  <div class="sim-field">
-                     <label>Self Employed</label>
-                     <select id="self_employed" title="Select employment status">
-                        <option value="No" selected>No</option>
-                        <option value="Yes">Yes</option>
-                     </select>
-                  </div>
-                  <div class="sim-field">
-                     <label>Property Area</label>
-                     <select id="property_area" title="Select property area">
-                        <option value="Semiurban" selected>Semiurban</option>
-                        <option value="Urban">Urban</option>
-                        <option value="Rural">Rural</option>
-                     </select>
-                  </div>
-               </div>
-               <div class="sim-section-label">Financial Details</div>
-               <div class="sim-grid-2">
-                  <div class="sim-field">
-                     <label>Applicant Income (₹)</label>
-                     <input type="number" id="applicant_income" placeholder="e.g. 5000" min="1" value="5000"/>
-                  </div>
-                  <div class="sim-field">
-                     <label>Co-applicant Income (₹)</label>
-                     <input type="number" id="coapplicant_income" placeholder="e.g. 0" min="0" value="0"/>
-                  </div>
-                  <div class="sim-field">
-                     <label>Loan Amount (₹ thousands)</label>
-                     <input type="number" id="loan_amount" placeholder="e.g. 128" min="1" value="128"/>
-                  </div>
-                  <div class="sim-field">
-                     <label>Loan Term (months)</label>
-                     <select id="loan_term" title="Select loan term in months">
-                        <option value="12">12</option>
-                        <option value="36">36</option>
-                        <option value="60">60</option>
-                        <option value="84">84</option>
-                        <option value="120">120</option>
-                        <option value="180">180</option>
-                        <option value="240">240</option>
-                        <option value="300">300</option>
-                        <option value="360" selected>360</option>
-                        <option value="480">480</option>
-                     </select>
-                  </div>
-               </div>
-               <div class="sim-section-label">Credit History</div>
-               <p class="credit-hint">Credit history is the single strongest predictor — toggle it to see the biggest swing.</p>
-               <div class="credit-toggle">
-                  <input type="radio" name="creditHistory" id="creditGood" value="1" checked/>
-                  <label for="creditGood">✓ Good (1)</label>
-                  <input type="radio" name="creditHistory" id="creditBad" value="0"/>
-                  <label for="creditBad">✗ Bad (0)</label>
-               </div>
-            </div>
-            <!-- RIGHT: result panel -->
-            <div class="sim-result">
-               <div class="result-verdict" id="resultVerdict">
-                  <div class="verdict-label">Prediction</div>
-                  <div class="verdict-badge" id="verdictBadge">—</div>
-                  <div class="conf-row">
-                     <span class="conf-label">Confidence</span>
-                     <span class="conf-value" id="confValue">—</span>
-                  </div>
-                  <div class="conf-track">
-                     <div class="conf-fill" id="confFill"></div>
-                  </div>
-               </div>
-               <div class="result-spark">
-                  <div class="spark-title">Last 20 predictions</div>
-                  <div id="sparklineChart"></div>
-               </div>
-               <div class="result-summary">
-                  <div class="summary-title">Key Inputs</div>
-                  <div class="summary-row">
-                     <span class="summary-key">Credit History</span>
-                     <span class="summary-val" id="summCredit">—</span>
-                  </div>
-                  <div class="summary-row">
-                     <span class="summary-key">Applicant Income</span>
-                     <span class="summary-val" id="summIncome">—</span>
-                  </div>
-                  <div class="summary-row">
-                     <span class="summary-key">Loan Amount</span>
-                     <span class="summary-val" id="summLoan">—</span>
-                  </div>
-                  <div class="summary-row">
-                     <span class="summary-key">Property Area</span>
-                     <span class="summary-val" id="summArea">—</span>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-      <script src="{{ url_for('static', filename='js/simulate.js') }}"></script>
-   </body>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+        <script src="{{ url_for('static', filename='js/simulate.js') }}"></script>
+    </body>
 </html>

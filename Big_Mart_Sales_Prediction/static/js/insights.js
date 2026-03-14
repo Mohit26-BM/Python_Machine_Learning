@@ -38,12 +38,12 @@ const DESCRIPTIONS = {
 };
 
 const TAKEAWAYS = {
-  "Item MRP":
-    "Pricing is the single strongest lever for sales. Items with higher MRP generate more revenue, suggesting premium pricing drives BigMart's sales.",
   "Outlet Type":
-    "Supermarket Type3 outlets significantly outperform grocery stores. Outlet format matters as much as product choice.",
-  "Item Visibility":
-    "Shelf placement has a measurable impact. Items with lower visibility scores tend to underperform even when priced well.",
+    "The single most influential feature at 35%. Supermarket Type3 outlets significantly outperform grocery stores — outlet format matters more than product choice.",
+  "Item MRP":
+    "The second strongest predictor at 32.3%. Higher-priced items generate more revenue, suggesting premium pricing drives a large share of BigMart's sales.",
+  "Outlet Establishment Year":
+    "Accounts for 19.9% of prediction weight. Older outlets have established customer bases and consistently higher sales volumes.",
   "Outlet Location Type":
     "Tier 1 city outlets perform differently from Tier 3. Urban market size and consumer income both factor in.",
 };

@@ -6,6 +6,7 @@
       <title>ChurnGuard — Customer Churn Prediction</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
       <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+      <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
    </head>
    <body>
       <!-- ═══════════════════════════════════════════════
@@ -14,7 +15,11 @@
       <!-- Hero -->
       <nav class="lp-nav">
          <div class="lp-nav-inner">
-            <span class="lp-nav-brand">📉 ChurnGuard</span>
+            <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='favicon.ico') }}" 
+               style="width:24px; height:24px; margin-right:8px; vertical-align:middle;">
+            ChurnGuard
+            </a>
             <div class="lp-nav-links">
                <a href="/history" class="lp-nav-link">History</a>
                <a href="/dashboard" class="lp-nav-link">Summary</a>

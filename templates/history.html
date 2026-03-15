@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction History</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+</head>
+<body class="history-body">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <span class="nav-brand">🏥 InsurePredict</span>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Predict</a>
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/history" class="nav-link active">History</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="history-container">
+
+    <div class="history-header">
+      <h1 class="history-title">Prediction History</h1>
+      <p class="history-sub">Last 20 predictions made</p>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Age</th>
+            <th>Sex</th>
+            <th>BMI</th>
+            <th>Children</th>
+            <th>Smoker</th>
+            <th>Region</th>
+            <th>Predicted Cost</th>
+            <th>Risk Level</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] | capitalize }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            <td>
+              <span class="badge {% if row[4] == 'yes' %}badge-smoker{% else %}badge-nonsmoker{% endif %}">
+                {{ row[4] | capitalize }}
+              </span>
+            </td>
+            <td>{{ row[5] | capitalize }}</td>
+            <td class="charges">${{ "{:,.2f}".format(row[6]) }}</td>
+            <td>
+              <span class="badge badge-{{ row[7].lower().replace(' ', '-') }}">{{ row[7] }}</span>
+            </td>
+            <td class="timestamp">{{ row[8] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if not rows %}
+      <div class="empty-state">
+        <p>No prediction history available yet.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="footer-actions">
+      <a href="/" class="btn-back">← Back to Predict</a>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>InsurePredict — Dashboard</title>
+      <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+   </head>
+   <body>
+      <nav class="navbar">
+         <div class="nav-inner">
+            <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='favicon.ico') }}"
+               style="width:24px;height:24px;margin-right:8px;vertical-align:middle;">
+            InsurePredict
+            </a>
+            <div class="nav-links">
+               <a href="/"          class="nav-link">Home</a>
+               <a href="/simulate"  class="nav-link">Simulator</a>
+               <a href="/risk" class="nav-link">Risk Explainer</a>
+               <a href="/dashboard" class="nav-link active">Dashboard</a>
+            </div>
+         </div>
+      </nav>
+      <div class="container">
+         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+            <div>
+               <h1 class="page-title">All-Time Dashboard</h1>
+               <p class="page-subtitle">Analytics across all insurance cost predictions</p>
+            </div>
+            <a href="/#predict-form" style="background:#0D9488;color:#fff;padding:9px 20px;
+               border-radius:8px;font-size:0.87rem;font-weight:600;text-decoration:none;">
+            New Prediction →
+            </a>
+         </div>
+         <!-- KPI Cards -->
+         <div class="summary-cards">
+            <div class="card">
+               <div class="kpi-icon" style="background:#e0f2fe;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#0369a1" stroke-width="1.8" width="24" height="24">
+                     <rect x="3" y="3" width="18" height="18" rx="2"/>
+                     <path d="M3 9h18M9 21V9"/>
+                  </svg>
+               </div>
+               <h3>{{ total }}</h3>
+               <p>Total Predictions</p>
+            </div>
+            <div class="card">
+               <div class="kpi-icon" style="background:#dcfce7;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="1.8" width="24" height="24">
+                     <line x1="12" y1="1" x2="12" y2="23"/>
+                     <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                  </svg>
+               </div>
+               <h3>${{ "{:,.0f}".format(avg_charges) }}</h3>
+               <p>Avg Predicted Cost</p>
+            </div>
+            <div class="card">
+               <div class="kpi-icon" style="background:#fee2e2;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="1.8" width="24" height="24">
+                     <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                     <line x1="12" y1="9" x2="12" y2="13"/>
+                     <line x1="12" y1="17" x2="12.01" y2="17"/>
+                  </svg>
+               </div>
+               <h3>{{ high_cost }}</h3>
+               <p>High Cost Cases</p>
+            </div>
+            <div class="card">
+               <div class="kpi-icon" style="background:#fef3c7;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="1.8" width="24" height="24">
+                     <path d="M18 8h1a4 4 0 010 8h-1"/>
+                     <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+                     <line x1="6" y1="1" x2="6" y2="4"/>
+                     <line x1="10" y1="1" x2="10" y2="4"/>
+                     <line x1="14" y1="1" x2="14" y2="4"/>
+                  </svg>
+               </div>
+               <h3>{{ smokers }}</h3>
+               <p>Smoker Predictions</p>
+            </div>
+         </div>
+         <!-- Charts Row 1 — Line + Donut -->
+         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+            <div class="chart-card">
+               <p class="section-title">Predicted Charges Over Time</p>
+               <canvas id="lineChart"></canvas>
+            </div>
+            <div class="chart-card">
+               <p class="section-title">Risk Distribution</p>
+               <canvas id="donutChart"></canvas>
+            </div>
+         </div>
+         <!-- Charts Row 2 — Age + Smoker -->
+         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px;">
+            <div class="chart-card">
+               <p class="section-title">Predictions by Age Group</p>
+               <canvas id="ageChart"></canvas>
+            </div>
+            <div class="chart-card">
+               <p class="section-title">Smoker vs Non-Smoker Avg Cost</p>
+               <canvas id="smokerChart"></canvas>
+            </div>
+         </div>
+         <!-- History Table -->
+         <h2 class="page-title" style="font-size:1.3rem;margin-bottom:4px;">Recent Predictions</h2>
+         <p class="page-subtitle" style="margin-bottom:16px;">Last 20 predictions made</p>
+         <div class="table-wrapper">
+            {% if history_rows %}
+            <table class="history-table">
+               <thead>
+                  <tr>
+                     <th>Age</th>
+                     <th>Sex</th>
+                     <th>BMI</th>
+                     <th>Children</th>
+                     <th>Smoker</th>
+                     <th>Region</th>
+                     <th>Predicted Cost</th>
+                     <th>Risk</th>
+                     <th>Date</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  {% for row in history_rows %}
+                  <tr>
+                     <td>{{ row.age }}</td>
+                     <td>{{ row.sex | capitalize }}</td>
+                     <td>{{ row.bmi }}</td>
+                     <td>{{ row.children }}</td>
+                     <td>
+                        <span class="badge {% if row.smoker == 'yes' %}badge-smoker{% else %}badge-nonsmoker{% endif %}">
+                        {{ row.smoker | capitalize }}
+                        </span>
+                     </td>
+                     <td>{{ row.region | capitalize }}</td>
+                     <td class="charges">${{ "{:,.2f}".format(row.predicted_charges) }}</td>
+                     <td>
+                        <span class="badge badge-{{ row.risk_level | lower | replace(' ', '-') }}">
+                        {{ row.risk_level }}
+                        </span>
+                     </td>
+                     <td class="timestamp">{{ row.created_at[:16].replace('T', ' ') }}</td>
+                  </tr>
+                  {% endfor %}
+               </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+               No predictions yet. <a href="/#predict-form">Make your first prediction →</a>
+            </div>
+            {% endif %}
+         </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+         const chargesOverTime = JSON.parse('{{ charges_over_time | default([]) | tojson | safe }}');
+         const ageBuckets      = JSON.parse('{{ age_buckets | default({}) | tojson | safe }}');
+         const riskDist        = JSON.parse('{{ distribution | default({}) | tojson | safe }}');
+         const smokerAvg       = JSON.parse('{{ smoker_avg | default(0) | tojson | safe }}');
+         const nonsmokerAvg    = JSON.parse('{{ nonsmoker_avg | default(0) | tojson | safe }}');
+         
+         // ── Line Chart ─────────────────────────────────────────────
+         new Chart(document.getElementById('lineChart'), {
+           type: 'line',
+           data: {
+             labels: chargesOverTime.map((_, i) => '#' + (i + 1)),
+             datasets: [{
+               label: 'Predicted Charges ($)',
+               data: chargesOverTime,
+               borderColor: '#3B82F6',
+               backgroundColor: 'rgba(59,130,246,0.08)',
+               borderWidth: 2.5,
+               pointBackgroundColor: '#3B82F6',
+               pointRadius: 4,
+               tension: 0.4,
+               fill: true,
+             }]
+           },
+           options: {
+             responsive: true,
+             maintainAspectRatio: false,
+             plugins: { legend: { display: false } },
+             scales: {
+               y: {
+                 grid: { color: '#F1F5F9' },
+                 ticks: { callback: v => '$' + v.toLocaleString() }
+               },
+               x: { grid: { display: false } }
+             }
+           }
+         });
+         
+         // ── Donut Chart ────────────────────────────────────────────
+         new Chart(document.getElementById('donutChart'), {
+           type: 'doughnut',
+           data: {
+             labels: ['Low', 'Medium', 'High', 'Very High'],
+             datasets: [{
+               data: [
+                 riskDist.Low || 0,
+                 riskDist.Medium || 0,
+                 riskDist.High || 0,
+                 riskDist['Very High'] || 0
+               ],
+               backgroundColor: ['#22C55E', '#F59E0B', '#EF4444', '#7C3AED'],
+               borderWidth: 2,
+               borderColor: '#fff'
+             }]
+           },
+           options: {
+             responsive: true,
+             maintainAspectRatio: false,
+             plugins: {
+               legend: {
+                 position: 'bottom',
+                 labels: { padding: 14, font: { size: 12 } }
+               }
+             }
+           }
+         });
+         
+         // ── Age Bar Chart ──────────────────────────────────────────
+         new Chart(document.getElementById('ageChart'), {
+           type: 'bar',
+           data: {
+             labels: Object.keys(ageBuckets),
+             datasets: [{
+               label: 'Predictions',
+               data: Object.values(ageBuckets),
+               backgroundColor: '#10B981',
+               borderRadius: 6,
+               borderSkipped: false,
+             }]
+           },
+           options: {
+             responsive: true,
+             maintainAspectRatio: false,
+             plugins: { legend: { display: false } },
+             scales: {
+               y: {
+                 beginAtZero: true,
+                 grid: { color: '#F1F5F9' },
+                 ticks: { precision: 0 }
+               },
+               x: { grid: { display: false } }
+             }
+           }
+         });
+         
+         // ── Smoker Bar Chart ───────────────────────────────────────
+         new Chart(document.getElementById('smokerChart'), {
+           type: 'bar',
+           data: {
+             labels: ['Smoker', 'Non-Smoker'],
+             datasets: [{
+               label: 'Avg Charges ($)',
+               data: [smokerAvg, nonsmokerAvg],
+               backgroundColor: ['#F59E0B', '#10B981'],
+               borderRadius: 6,
+               borderSkipped: false,
+             }]
+           },
+           options: {
+             responsive: true,
+             maintainAspectRatio: false,
+             plugins: { legend: { display: false } },
+             scales: {
+               y: {
+                 beginAtZero: true,
+                 grid: { color: '#F1F5F9' },
+                 ticks: { callback: v => '$' + v.toLocaleString() }
+               },
+               x: { grid: { display: false } }
+             }
+           }
+         });
+      </script>
+   </body>
+</html>

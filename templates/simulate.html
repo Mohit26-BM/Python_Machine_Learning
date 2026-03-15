@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>InsurePredict — Cost Simulator</title>
+      <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/simulator.css') }}">
+   </head>
+   <body class="sim-body">
+      <nav class="navbar">
+         <div class="nav-inner">
+            <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='favicon.ico') }}"
+               style="width:24px;height:24px;margin-right:8px;vertical-align:middle;">
+            InsurePredict
+            </a>
+            <div class="nav-links">
+               <a href="/"          class="nav-link">Home</a>
+               <a href="/risk" class="nav-link">Risk Explainer</a>
+               <a href="/simulate"  class="nav-link active">Simulator</a>
+               <a href="/dashboard" class="nav-link">Dashboard</a>
+            </div>
+         </div>
+      </nav>
+      <div class="sim-container">
+         <div class="sim-header">
+            <h1 class="sim-title">Cost <span style="color:#0D9488;">Simulator</span></h1>
+            <p class="sim-sub">Adjust the sliders to see how your insurance cost changes in real time</p>
+         </div>
+         <div class="sim-layout">
+            <!-- Controls -->
+            <div class="sim-controls">
+               <div class="sim-section-label">Personal Details</div>
+               <!-- Age -->
+               <div class="sim-group">
+                  <div class="sim-label-row">
+                     <label>Age</label>
+                     <span class="sim-val" id="age-val">30</span>
+                  </div>
+                  <input type="range" id="age" min="1" max="100" value="30" class="sim-slider">
+                  <div class="sim-range-labels"><span>1</span><span>100</span></div>
+               </div>
+               <!-- BMI -->
+               <div class="sim-group">
+                  <div class="sim-label-row">
+                     <label>BMI</label>
+                     <span class="sim-val" id="bmi-val">25.0</span>
+                  </div>
+                  <input type="range" id="bmi" min="10" max="60" value="25" step="0.1" class="sim-slider">
+                  <div class="sim-range-labels"><span>10</span><span>60</span></div>
+               </div>
+               <!-- Children -->
+               <div class="sim-group">
+                  <div class="sim-label-row">
+                     <label>Children</label>
+                     <span class="sim-val" id="children-val">0</span>
+                  </div>
+                  <input type="range" id="children" min="0" max="10" value="0" class="sim-slider">
+                  <div class="sim-range-labels"><span>0</span><span>10</span></div>
+               </div>
+               <div class="sim-section-label" style="margin-top:24px;">Profile</div>
+               <!-- Sex toggle -->
+               <div class="sim-group">
+                  <label class="sim-label-inline">Sex</label>
+                  <div class="sim-toggle-group" id="sex-toggle">
+                     <button class="sim-toggle active" data-val="male">Male</button>
+                     <button class="sim-toggle" data-val="female">Female</button>
+                  </div>
+               </div>
+               <!-- Smoker toggle -->
+               <div class="sim-group">
+                  <label class="sim-label-inline">Smoker</label>
+                  <div class="sim-toggle-group" id="smoker-toggle">
+                     <button class="sim-toggle" data-val="yes">Yes</button>
+                     <button class="sim-toggle active" data-val="no">No</button>
+                  </div>
+               </div>
+               <!-- Region -->
+               <div class="sim-group">
+                  <label class="sim-label-inline">Region</label>
+                  <select id="region" class="sim-select">
+                     <option value="southeast">Southeast</option>
+                     <option value="southwest">Southwest</option>
+                     <option value="northeast">Northeast</option>
+                     <option value="northwest">Northwest</option>
+                  </select>
+               </div>
+            </div>
+            <!-- Result Panel -->
+            <div class="sim-result-panel">
+               <div class="sim-result-card">
+                  <div class="sim-result-label">Estimated Annual Cost</div>
+                  <div class="sim-result-amount" id="result-amount">—</div>
+                  <div id="result-risk" class="sim-risk-badge"></div>
+                  <div class="sim-divider"></div>
+                  <!-- Factor breakdown -->
+                  <div class="sim-factors">
+                     <div class="sim-factor-title">Key Cost Drivers</div>
+                     <div class="sim-factor-row">
+                        <span>Smoker Status</span>
+                        <span id="factor-smoker" class="sim-factor-val">—</span>
+                     </div>
+                     <div class="sim-factor-row">
+                        <span>BMI Category</span>
+                        <span id="factor-bmi" class="sim-factor-val">—</span>
+                     </div>
+                     <div class="sim-factor-row">
+                        <span>Age Group</span>
+                        <span id="factor-age" class="sim-factor-val">—</span>
+                     </div>
+                  </div>
+                  <div class="sim-divider"></div>
+                  <a href="/predict" class="sim-cta">Save This Prediction →</a>
+               </div>
+               <!-- Tip card -->
+               <div class="sim-tip-card" id="sim-tip">
+                  <div class="sim-tip-title">💡 Insight</div>
+                  <div class="sim-tip-text" id="tip-text">Adjust the sliders to see your estimated cost.</div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script>
+         // State
+         const state = { age: 30, bmi: 25, children: 0, sex: "male", smoker: "no", region: "southeast" };
+         let debounceTimer;
+         
+         // Slider sync
+         ["age", "bmi", "children"].forEach(id => {
+           const el  = document.getElementById(id);
+           const val = document.getElementById(`${id}-val`);
+           el.addEventListener("input", () => {
+             val.textContent = id === "bmi" ? parseFloat(el.value).toFixed(1) : el.value;
+             state[id] = id === "bmi" ? parseFloat(el.value) : parseInt(el.value);
+             debouncedPredict();
+           });
+         });
+         
+         // Toggle buttons
+         ["sex", "smoker"].forEach(group => {
+           document.getElementById(`${group}-toggle`).querySelectorAll(".sim-toggle").forEach(btn => {
+             btn.addEventListener("click", () => {
+               document.getElementById(`${group}-toggle`).querySelectorAll(".sim-toggle")
+                 .forEach(b => b.classList.remove("active"));
+               btn.classList.add("active");
+               state[group] = btn.dataset.val;
+               debouncedPredict();
+             });
+           });
+         });
+         
+         // Region
+         document.getElementById("region").addEventListener("change", e => {
+           state.region = e.target.value;
+           debouncedPredict();
+         });
+         
+         // Debounced predict
+         function debouncedPredict() {
+           clearTimeout(debounceTimer);
+           debounceTimer = setTimeout(runPredict, 300);
+         }
+         
+         async function runPredict() {
+           try {
+             const res  = await fetch("/simulate", {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify(state),
+             });
+             const data = await res.json();
+         
+             if (data.error) return;
+         
+             // Update amount
+             document.getElementById("result-amount").textContent =
+               `$${data.predicted_charges.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+         
+             // Risk badge
+             const riskEl = document.getElementById("result-risk");
+             riskEl.textContent = data.risk_level;
+             riskEl.className = `sim-risk-badge risk-${data.risk_level.toLowerCase().replace(" ", "-")}`;
+         
+             // Factors
+             document.getElementById("factor-smoker").textContent =
+               state.smoker === "yes" ? "🔴 High Impact" : "🟢 Low Impact";
+             document.getElementById("factor-bmi").textContent =
+               state.bmi >= 30 ? "🔴 Obese" : state.bmi >= 25 ? "🟡 Overweight" : "🟢 Normal";
+             document.getElementById("factor-age").textContent =
+               state.age >= 55 ? "🔴 Senior" : state.age >= 35 ? "🟡 Middle-aged" : "🟢 Young";
+         
+             // Tip
+             updateTip(data.predicted_charges, data.risk_level);
+         
+           } catch (e) {
+             console.error(e);
+           }
+         }
+         
+         function updateTip(charges, risk) {
+           const tips = {
+             "Very High": "Smoking significantly increases your cost. Quitting could reduce your premium by up to 3x.",
+             "High":      "High BMI or age is driving your cost up. Maintaining a healthy BMI can lower premiums.",
+             "Medium":    "Your profile is moderate risk. A non-smoking status would bring costs down significantly.",
+             "Low":       "Great profile! You're in the lowest risk tier with competitive insurance rates.",
+           };
+           document.getElementById("tip-text").textContent = tips[risk] || "Adjust sliders to see insights.";
+         }
+         
+         // Run on load
+         runPredict();
+      </script>
+   </body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>InsurePredict — Risk Explainer</title>
+      <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/risk.css') }}">
+   </head>
+   <body class="risk-body">
+      <nav class="navbar">
+         <div class="nav-inner">
+            <a href="/" class="nav-brand">
+            <img src="{{ url_for('static', filename='favicon.ico') }}"
+               style="width:24px;height:24px;margin-right:8px;vertical-align:middle;">
+            InsurePredict
+            </a>
+            <div class="nav-links">
+               <a href="/"          class="nav-link">Home</a>
+               <a href="/simulate"  class="nav-link">Simulator</a>
+               <a href="/risk"      class="nav-link active">Risk Explainer</a>
+               <a href="/dashboard" class="nav-link">Dashboard</a>
+            </div>
+         </div>
+      </nav>
+      <div class="risk-container">
+         <!-- Header -->
+         <div class="risk-header">
+            <h1 class="risk-title">Risk <span style="color:#0D9488;">Explainer</span></h1>
+            <p class="risk-sub">Enter your profile to see exactly which factors drive your insurance cost</p>
+         </div>
+         <div class="risk-layout">
+            <!-- Input Form -->
+            <div class="risk-form-card">
+               <div class="risk-section-label">Your Profile</div>
+               <div class="risk-form-grid">
+                  <div class="risk-group">
+                     <label>Age</label>
+                     <input type="number" id="r-age" placeholder="e.g. 35" min="1" max="100">
+                  </div>
+                  <div class="risk-group">
+                     <label>Sex</label>
+                     <select id="r-sex">
+                        <option value="">Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                     </select>
+                  </div>
+                  <div class="risk-group">
+                     <label>BMI</label>
+                     <input type="number" id="r-bmi" placeholder="e.g. 27.5" step="0.1" min="10" max="60">
+                  </div>
+                  <div class="risk-group">
+                     <label>Children</label>
+                     <input type="number" id="r-children" placeholder="e.g. 2" min="0" max="10">
+                  </div>
+                  <div class="risk-group">
+                     <label>Smoker</label>
+                     <select id="r-smoker">
+                        <option value="">Select</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                     </select>
+                  </div>
+                  <div class="risk-group">
+                     <label>Region</label>
+                     <select id="r-region">
+                        <option value="">Select</option>
+                        <option value="southwest">Southwest</option>
+                        <option value="southeast">Southeast</option>
+                        <option value="northwest">Northwest</option>
+                        <option value="northeast">Northeast</option>
+                     </select>
+                  </div>
+               </div>
+               <div id="risk-error" style="display:none;color:#b91c1c;font-size:0.85rem;
+                  background:#fef2f2;border:1px solid #fecaca;border-radius:8px;
+                  padding:10px 14px;margin-bottom:12px;"></div>
+               <button id="risk-btn" onclick="analyseRisk()">
+               Analyse My Risk →
+               </button>
+            </div>
+            <!-- Results Panel -->
+            <div class="risk-results" id="risk-results" style="display:none;">
+               <!-- Predicted cost -->
+               <div class="risk-cost-card">
+                  <div class="risk-cost-label">Your Estimated Annual Cost</div>
+                  <div class="risk-cost-amount" id="r-cost">—</div>
+                  <span class="risk-cost-badge" id="r-risk-badge"></span>
+               </div>
+               <!-- Personalised insight -->
+               <div class="risk-insight-card" id="r-insight-card">
+                  <div class="risk-insight-icon">
+                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="24" height="24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                     </svg>
+                  </div>
+                  <div class="risk-insight-text" id="r-insight"></div>
+               </div>
+               <!-- Feature importance bars -->
+               <div class="risk-bars-card">
+                  <div class="risk-section-label" style="margin-bottom:20px;">What Drives Your Cost</div>
+                  <div class="risk-bar-row" id="bar-smoker">
+                     <div class="risk-bar-info">
+                        <div class="risk-bar-label">
+                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16">
+                              <path d="M18 8h1a4 4 0 010 8h-1"/>
+                              <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+                              <line x1="6" y1="1" x2="6" y2="4"/>
+                              <line x1="10" y1="1" x2="10" y2="4"/>
+                              <line x1="14" y1="1" x2="14" y2="4"/>
+                           </svg>
+                           Smoker Status
+                        </div>
+                        <div class="risk-bar-pct">92.2%</div>
+                     </div>
+                     <div class="risk-bar-track">
+                        <div class="risk-bar-fill" style="width:0%" data-width="92.2" id="fill-smoker"></div>
+                     </div>
+                     <div class="risk-bar-note" id="note-smoker"></div>
+                  </div>
+                  <div class="risk-bar-row" id="bar-bmi">
+                     <div class="risk-bar-info">
+                        <div class="risk-bar-label">
+                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16">
+                              <circle cx="12" cy="12" r="10"/>
+                              <line x1="12" y1="8" x2="12" y2="12"/>
+                              <line x1="12" y1="16" x2="12.01" y2="16"/>
+                           </svg>
+                           BMI
+                        </div>
+                        <div class="risk-bar-pct">3.2%</div>
+                     </div>
+                     <div class="risk-bar-track">
+                        <div class="risk-bar-fill" style="width:0%" data-width="3.2" id="fill-bmi"></div>
+                     </div>
+                     <div class="risk-bar-note" id="note-bmi"></div>
+                  </div>
+                  <div class="risk-bar-row" id="bar-age">
+                     <div class="risk-bar-info">
+                        <div class="risk-bar-label">
+                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16">
+                              <rect x="3" y="4" width="18" height="18" rx="2"/>
+                              <path d="M16 2v4M8 2v4M3 10h18"/>
+                           </svg>
+                           Age
+                        </div>
+                        <div class="risk-bar-pct">2.1%</div>
+                     </div>
+                     <div class="risk-bar-track">
+                        <div class="risk-bar-fill" style="width:0%" data-width="2.1" id="fill-age"></div>
+                     </div>
+                     <div class="risk-bar-note" id="note-age"></div>
+                  </div>
+                  <div class="risk-bar-row" id="bar-children">
+                     <div class="risk-bar-info">
+                        <div class="risk-bar-label">
+                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16">
+                              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                              <circle cx="9" cy="7" r="4"/>
+                              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                           </svg>
+                           Children
+                        </div>
+                        <div class="risk-bar-pct">1.0%</div>
+                     </div>
+                     <div class="risk-bar-track">
+                        <div class="risk-bar-fill" style="width:0%" data-width="1.0" id="fill-children"></div>
+                     </div>
+                     <div class="risk-bar-note" id="note-children"></div>
+                  </div>
+                  <div class="risk-bar-row" id="bar-region">
+                     <div class="risk-bar-info">
+                        <div class="risk-bar-label">
+                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16">
+                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                              <circle cx="12" cy="10" r="3"/>
+                           </svg>
+                           Region
+                        </div>
+                        <div class="risk-bar-pct">0.8%</div>
+                     </div>
+                     <div class="risk-bar-track">
+                        <div class="risk-bar-fill" style="width:0%" data-width="0.8" id="fill-region"></div>
+                     </div>
+                     <div class="risk-bar-note" id="note-region"></div>
+                  </div>
+                  <div class="risk-bar-row" id="bar-sex">
+                     <div class="risk-bar-info">
+                        <div class="risk-bar-label">
+                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16">
+                              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                              <circle cx="12" cy="7" r="4"/>
+                           </svg>
+                           Sex
+                        </div>
+                        <div class="risk-bar-pct">0.6%</div>
+                     </div>
+                     <div class="risk-bar-track">
+                        <div class="risk-bar-fill" style="width:0%" data-width="0.6" id="fill-sex"></div>
+                     </div>
+                     <div class="risk-bar-note" id="note-sex"></div>
+                  </div>
+               </div>
+               <!-- What-if tip -->
+               <div class="risk-whatif-card" id="r-whatif" style="display:none;">
+                  <div class="risk-whatif-title">
+                     <svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="1.8" 
+                        width="16" height="16" style="margin-right:6px;vertical-align:middle;">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                        <polyline points="17 6 23 6 23 12"/>
+                     </svg>
+                     Potential Savings
+                  </div>
+                  <div class="risk-whatif-text" id="r-whatif-text"></div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script>
+         async function analyseRisk() {
+           const err     = document.getElementById("risk-error");
+           const results = document.getElementById("risk-results");
+           err.style.display = "none";
+         
+           const age      = document.getElementById("r-age").value;
+           const sex      = document.getElementById("r-sex").value;
+           const bmi      = document.getElementById("r-bmi").value;
+           const children = document.getElementById("r-children").value;
+           const smoker   = document.getElementById("r-smoker").value;
+           const region   = document.getElementById("r-region").value;
+         
+           if (!age || !sex || !bmi || !children || !smoker || !region) {
+             err.textContent = "Please fill in all fields.";
+             err.style.display = "block";
+             return;
+           }
+         
+           try {
+             const res  = await fetch("/predict", {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify({ age, sex, bmi: parseFloat(bmi),
+                                      children: parseInt(children), smoker, region }),
+             });
+             const data = await res.json();
+             if (data.error) { err.textContent = data.error; err.style.display = "block"; return; }
+         
+             // Show results
+             results.style.display = "block";
+         
+             // Cost
+             document.getElementById("r-cost").textContent =
+               "$" + data.predicted_charges.toLocaleString("en-US", { minimumFractionDigits: 2 });
+         
+             // Risk badge
+             const badge = document.getElementById("r-risk-badge");
+             badge.textContent  = data.risk_level;
+             badge.className    = `risk-cost-badge risk-badge-${data.risk_level.toLowerCase().replace(" ", "-")}`;
+         
+             // Animate bars
+             setTimeout(() => {
+               document.querySelectorAll(".risk-bar-fill").forEach(bar => {
+                 bar.style.width = bar.dataset.width + "%";
+               });
+             }, 100);
+         
+             // Personalised notes
+             const isSmoker = smoker === "yes";
+             const bmiVal   = parseFloat(bmi);
+             const ageVal   = parseInt(age);
+         
+             document.getElementById("note-smoker").textContent =
+               isSmoker ? "🔴 You smoke — this is the dominant cost driver" : "🟢 Non-smoker — major saving";
+             document.getElementById("note-bmi").textContent =
+               bmiVal >= 30 ? "🔴 Obese BMI — elevated risk" :
+               bmiVal >= 25 ? "🟡 Overweight BMI — moderate impact" : "🟢 Healthy BMI";
+             document.getElementById("note-age").textContent =
+               ageVal >= 55 ? "🔴 Senior age group" :
+               ageVal >= 35 ? "🟡 Middle-aged" : "🟢 Young age group";
+             document.getElementById("note-children").textContent =
+               parseInt(children) > 2 ? "🟡 More dependents adds cost" : "🟢 Few dependents";
+             document.getElementById("note-region").textContent  = "🟢 Minimal impact on cost";
+             document.getElementById("note-sex").textContent     = "🟢 Minimal impact on cost";
+         
+             // Bar colors based on smoker
+             document.getElementById("fill-smoker").style.background =
+               isSmoker ? "#ef4444" : "#22c55e";
+         
+             // Insight
+             const insight = document.getElementById("r-insight");
+             if (isSmoker) {
+               insight.textContent =
+                 "Smoking accounts for 92.2% of this model's prediction weight. " +
+                 "Your smoking status is almost entirely responsible for your estimated cost. " +
+                 "Quitting smoking is by far the most impactful change you can make.";
+               document.getElementById("r-insight-card").style.borderColor = "#fca5a5";
+               document.getElementById("r-insight-card").style.background  = "#fef2f2";
+             } else {
+               insight.textContent =
+                 "Since you don't smoke, your cost is shaped by BMI, age, and the remaining features. " +
+                 "Maintaining a healthy BMI below 25 and staying active are the most impactful factors " +
+                 "you can influence.";
+               document.getElementById("r-insight-card").style.borderColor = "#86efac";
+               document.getElementById("r-insight-card").style.background  = "#f0fdf4";
+             }
+         
+             // What-if savings
+             const whatif = document.getElementById("r-whatif");
+             const whatifText = document.getElementById("r-whatif-text");
+             if (isSmoker) {
+               whatif.style.display = "block";
+               whatifText.textContent =
+                 "If you quit smoking, your estimated cost could drop significantly — " +
+                 "non-smokers with similar profiles typically pay 3–4x less in annual insurance charges.";
+             } else if (bmiVal >= 25) {
+               whatif.style.display = "block";
+               whatifText.textContent =
+                 "Reducing your BMI below 25 (healthy range) could lower your premium. " +
+                 "BMI accounts for 3.2% of prediction weight — the second most influential factor for non-smokers.";
+             } else {
+               whatif.style.display = "none";
+             }
+
+             // Scroll to results
+             results.scrollIntoView({ behavior: "smooth", block: "start" });
+         
+           } catch (e) {
+             err.textContent = "Something went wrong. Please try again.";
+             err.style.display = "block";
+           }
+         }
+      </script>
+   </body>
+</html>

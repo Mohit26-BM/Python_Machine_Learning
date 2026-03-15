@@ -274,3 +274,46 @@
   .lp-section      { padding: 56px 24px; }
   .lp-footer-inner { flex-direction: column; gap: 8px; text-align: center; }
 }
+
+.cta-section .btn-hero {
+  display: inline-block;
+  background: #0D9488;
+  color: #fff;
+  padding: 16px 40px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(13,148,136,0.4);
+}
+
+.cta-section .btn-hero:hover {
+  background: #0F766E;
+  transform: translateY(-2px);
+}
+.cta-section {
+  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%);
+  padding: 80px 48px;
+  text-align: center;
+}
+
+.cta-inner {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.cta-section h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.cta-section p {
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 32px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
